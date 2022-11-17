@@ -30,10 +30,10 @@ Partial Class LdtForm
         Me.TableLayoutPanel1 = New System.Windows.Forms.TableLayoutPanel()
         Me.Info_SplitContainer = New System.Windows.Forms.SplitContainer()
         Me.Info_RichTextBox = New System.Windows.Forms.RichTextBox()
+        Me.Instructions_Label = New System.Windows.Forms.Label()
         Me.Block_ProgressBar = New LexicalDecisionTask.ProgressBarWithText()
         Me.LeftResponseLetter_Label = New System.Windows.Forms.Label()
         Me.RightResponseLetter_Label = New System.Windows.Forms.Label()
-        Me.Instructions_Label = New System.Windows.Forms.Label()
         Me.Background_TableLayoutPanel.SuspendLayout()
         CType(Me.Content_SplitContainer, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.Content_SplitContainer.Panel1.SuspendLayout()
@@ -139,7 +139,7 @@ Partial Class LdtForm
         '
         Me.Info_SplitContainer.Panel2.Controls.Add(Me.Instructions_Label)
         Me.Info_SplitContainer.Size = New System.Drawing.Size(744, 154)
-        Me.Info_SplitContainer.SplitterDistance = 113
+        Me.Info_SplitContainer.SplitterDistance = 124
         Me.Info_SplitContainer.TabIndex = 5
         Me.Info_SplitContainer.TabStop = False
         Me.Info_SplitContainer.Visible = False
@@ -150,9 +150,19 @@ Partial Class LdtForm
         Me.Info_RichTextBox.Location = New System.Drawing.Point(0, 0)
         Me.Info_RichTextBox.Name = "Info_RichTextBox"
         Me.Info_RichTextBox.ReadOnly = True
-        Me.Info_RichTextBox.Size = New System.Drawing.Size(744, 113)
+        Me.Info_RichTextBox.Size = New System.Drawing.Size(744, 124)
         Me.Info_RichTextBox.TabIndex = 3
         Me.Info_RichTextBox.Text = ""
+        '
+        'Instructions_Label
+        '
+        Me.Instructions_Label.BackColor = System.Drawing.SystemColors.ControlLight
+        Me.Instructions_Label.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.Instructions_Label.Location = New System.Drawing.Point(0, 0)
+        Me.Instructions_Label.Name = "Instructions_Label"
+        Me.Instructions_Label.Size = New System.Drawing.Size(744, 26)
+        Me.Instructions_Label.TabIndex = 0
+        Me.Instructions_Label.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
         '
         'Block_ProgressBar
         '
@@ -198,15 +208,6 @@ Partial Class LdtForm
         Me.RightResponseLetter_Label.Text = "Label2"
         Me.RightResponseLetter_Label.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
         Me.RightResponseLetter_Label.Visible = False
-        '
-        'Instructions_Label
-        '
-        Me.Instructions_Label.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.Instructions_Label.Location = New System.Drawing.Point(0, 0)
-        Me.Instructions_Label.Name = "Instructions_Label"
-        Me.Instructions_Label.Size = New System.Drawing.Size(744, 37)
-        Me.Instructions_Label.TabIndex = 0
-        Me.Instructions_Label.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
         '
         'LdtForm
         '

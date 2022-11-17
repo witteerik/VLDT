@@ -1,0 +1,40 @@
+// This file contains settings for the Video-Based Lexical Decision Task software. 
+// Most settings below require a value. Where not required this is noted by a comment (Lines, and parts of lines, in this file can be commented out using double slashes (i.e. //)
+
+RandomSeed = // Optional. Set to an integer value to accomplish repetition of the task randomization.
+
+ResponseKeys = J, F // Optional. The keyboard keys to use to note a correct and incorrect responses
+
+RandomizeResponseKeys = False // Set to True in order to randomize the assignment of response keys. If Set to False, response keys are assigned depending on the participant number (which is fed into the app on startup) according to the following system: Even participant numbers: The first response key = Correct, The second response key = Incorrect, and the opposite for odd participant numbers
+
+BlockCount = 3 // An integer noting the number of blocks in the test. (A block is a collection of real- and pseudo-type stimuli. All blocks need to contain an equal number of real- and pseudo-type stimuli respectively, as given by the variable TestItemCount below.)
+
+TestItemCount = 25 // The number of real- and pseudo-type stimuli, respectively, in each block.
+
+PractiseItemCount = 10 // The number of real- and pseudo-type stimuli, respectively, in the practise block.
+
+PractiseScoreLimit = 70 // The lower score limit (in percent correct, integer value) that needs to be obtained in the practise test in order to start the real test.
+
+MinInterTrialInterval = 400 // The minimum inter trial interval in milliseconds
+
+MaxInterTrialInterval = 600 // The maximum inter trial interval in milliseconds (Tip, in order to use a constant intertrial interval, set both variables to the same value.)
+
+MaxResponseTime = 500 // The maximum time (in milliseconds) after the end of the stimulus presentation that the participant may give a response.
+
+HideVideoBetweenTrials = False // If set to True, videos will be hidden directly after competion. If set to True, videos will remain visible (showing the last frame in each video) until the next trial is presented.
+
+HideVideoAtResponse = False // In order for this setting to be enabled, HideVideoBetweenTrials must be set to True. If HideVideoAtResponse is set to True, the video will be cut directly after a response is given or the response time is out. 
+
+PostPresentationResponsePeriod = True // If set to True, the maximum response timer starts after the completed stimulus presentation. If set to False, the maximum response timer starts at the beginning of the stimulus presentation.
+
+ExportAfterEveryTrial = True // If set to true, results will be exported directly after each trial. (In addition to the results save at the end of each block.)
+
+BackupTimerInterval = 10000 // The interval in milliseconds for a 'backup' timer that issues the next trial if for some reason something unexpected should happen in a trial that results in a hault during active testing. The interval should be set quite high, at least seconds longer than the longest video to be presented plus the selected maximum response time.
+
+RandomizeBlockOrder = False // If set to True, the order of blocks will be randomized between participants. If set to False, the order of blocks specified using the BlockOrder tag below will be used instead.
+
+<BlockOrders> // The current tag specifies block orders to be used. Specify a single block order per line and put the closing block order tag </BlockOrders> after the last line. Each block order is specified using a string BlockCount number of comma delimited integers. Participant 1 will use the first block order, participant 2 the second, etc. The block orders are used repeatedly, so that if for example 3 block orders are specified, participant five will use block order number 2.
+1,2,3
+2,3,1
+3,1,2
+</BlockOrders>

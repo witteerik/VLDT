@@ -1,2 +1,2 @@
 # VLDT
-Video-based lexical decision task
+Video-Based Lexical Decision Task

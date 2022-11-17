@@ -68,7 +68,7 @@ Public Class LdtForm
 
     Delegate Sub SetGuiModesDelegate(ByVal GuiMode As GuiModes)
 
-    Delegate Sub IssueResponseDelegate(ByVal Result As Results, ByVal ButtonPressed As Keys, ByVal ResponseTime As DateTime)
+    Delegate Sub IssueResponseDelegate(ByVal Result As Response, ByVal ButtonPressed As Keys, ByVal ResponseTime As DateTime)
 
     Delegate Sub NoArgumentsDelegate()
 
@@ -99,6 +99,19 @@ Public Class LdtForm
             MsgBox(ex.ToString)
             ShutDownTimer.Start()
         End Try
+
+        'Sleeps a while to show the splash screen
+        Threading.Thread.Sleep(3000)
+
+        Try
+
+            Dim CastSplashScreen As VLDT_SplashScreen = DirectCast(My.Application.SplashScreen, VLDT_SplashScreen)
+            CastSplashScreen.CloseSafe()
+
+        Catch ex As Exception
+            'Ignores any error here
+        End Try
+
 
         InitiateAppTimer.Start()
 
@@ -370,6 +383,12 @@ Public Class LdtForm
                             Return False
                         End If
 
+                    Case "PractiseScoreLimit".ToLowerInvariant
+                        If Integer.TryParse(VariableValueString, TestSpecification.PractiseScoreLimit) = False Then
+                            MsgBox("Unable to read the value " & VariableValueString & " given for the variable " & LineVariable & " in the lexical decision task file (" & TestSpecificationFilePath & ") as an integer number. Cannot proceed.", MsgBoxStyle.Exclamation, "Invalid variable value!")
+                            Return False
+                        End If
+
                     Case "MinInterTrialInterval".ToLowerInvariant
                         If Integer.TryParse(VariableValueString, TestSpecification.MinInterTrialInterval) = False Then
                             MsgBox("Unable to read the value " & VariableValueString & " given for the variable " & LineVariable & " in the lexical decision task file (" & TestSpecificationFilePath & ") as an integer number. Cannot proceed.", MsgBoxStyle.Exclamation, "Invalid variable value!")
@@ -445,7 +464,7 @@ Public Class LdtForm
                 Next
 
                 If CurrentBlockOrder.Count > 0 Then
-                    ManualBlockOrders.add(CurrentBlockOrder)
+                    ManualBlockOrders.Add(CurrentBlockOrder)
                 End If
 
             End If
@@ -560,9 +579,9 @@ Public Class LdtForm
 
         ActivateKeyDownHandler()
 
-        InstructionsTextBox.Text = "Press Space to start!"
+        Instructions_Label.Text = "Press Space to start!"
 
-        Info_RichTextBox.LoadFile("C:\VLDT\PilotExperiment1\Info.rtf")
+        Info_RichTextBox.LoadFile(IO.Path.Combine(TestSpecification.GetBlockParentFolder(), "Info.rtf"))
 
     End Sub
 
@@ -576,7 +595,7 @@ Public Class LdtForm
 
         ActivateKeyDownHandler()
 
-        InstructionsTextBox.Text = "Press Space to start real test!"
+        Instructions_Label.Text = "Press Space to start!"
 
     End Sub
 
@@ -598,7 +617,29 @@ Public Class LdtForm
 
         If ActiveTestMaterial.IsPractiseTestMaterial = True Then
 
-            RunSharpTest()
+            'Check if the user seemed to understand the task
+            Dim PractiseScore = ActiveTestMaterial.GetProportionCorrect
+
+            If PractiseScore < TestSpecification.PractiseScoreLimit Then
+
+                Dim PractiseScoreDialog As New PractiseScoreDialog
+                PractiseScoreDialog.SetScore(PractiseScore)
+                PractiseScoreDialog.ShowDialog(Me)
+
+                If PractiseScoreDialog.DialogResult = DialogResult.OK Then
+                    'OK means skip to real sharp 
+                    RunSharpTest()
+                Else
+                    'Anything else means redo practise test
+                    ActiveTestMaterial.ClearResults()
+
+                    'Restarts the practise test
+                    RunPraciseTest()
+                End If
+
+            Else
+                RunSharpTest()
+            End If
 
         Else
 
@@ -609,15 +650,26 @@ Public Class LdtForm
             Block_ProgressBar.ShowProgressText = True
             Block_ProgressBar.PerformStep()
 
-            InstructionsTextBox.Text = "You have now completed the lexical desicion task! Well done!" & vbCrLf & vbCrLf & "You may now close the app!"
+            Instructions_Label.Text = "You have now completed the lexical desicion task! Well done!" & vbCrLf & vbCrLf & "You may now close the app!"
 
         End If
 
     End Sub
 
-    Private Sub NewBlock()
+    Private Sub NewBlock_Safe()
 
-        InstructionsTextBox.Text = "You have now completed " & ActiveTestMaterial.CompletedBlocks & " of " & TestSpecification.NumberOfBlocks & " blocks." & vbCrLf & vbCrLf & "When you're ready, press space to start the next block"
+        If Me.InvokeRequired = True Then
+            Me.Invoke(New NoArgumentsDelegate(AddressOf NewBlock_Unsafe))
+        Else
+            NewBlock_Unsafe()
+        End If
+
+    End Sub
+
+    Private Sub NewBlock_Unsafe()
+
+        'Instructions_Label.Text = "You have now completed " & ActiveTestMaterial.CompletedBlocks & " of " & TestSpecification.NumberOfBlocks & " blocks." & vbCrLf & vbCrLf & "When you're ready, press space to start the next block"
+        Instructions_Label.Text = "Press Space to start!"
 
         Block_ProgressBar.PerformStep()
 
@@ -688,8 +740,10 @@ Public Class LdtForm
                 ActiveTestMaterial.ExportResults(TestResultExportFolder, ParticipantID, New SortedSet(Of Integer) From {ActiveTestMaterial.GetCurrentBlockNumber})
             End If
 
-            'Saving all test results (if at the last block)
-            If NextEvent.NextEventType = TestMaterial.NextEventTypes.EndOfTest Then ActiveTestMaterial.ExportResults(TestResultExportFolder, ParticipantID)
+            'Saving all test results (if at the last block), but only if it's not a practise test
+            If ActiveTestMaterial.IsPractiseTestMaterial = False Then
+                If NextEvent.NextEventType = TestMaterial.NextEventTypes.EndOfTest Then ActiveTestMaterial.ExportResults(TestResultExportFolder, ParticipantID)
+            End If
 
             'Sets CurrentItem to Nothing, and resets TrialExportUncludeHeadings 
             CurrentItem = Nothing
@@ -703,7 +757,7 @@ Public Class LdtForm
                 TestIsComplete_ThreadSafe()
             Else
                 'Starts a new block
-                NewBlock()
+                NewBlock_Safe()
             End If
             'Exits the sub 
             Exit Sub
@@ -883,12 +937,12 @@ Public Class LdtForm
                 Case RealKey
 
                     'Noting a correct response
-                    IssueResponse_ThreadSafe(Results.Real, e.KeyCode, DateTime.Now)
+                    IssueResponse_ThreadSafe(Response.Real, e.KeyCode, DateTime.Now)
 
                 Case PseudoKey
 
                     'Noting an incorrect response
-                    IssueResponse_ThreadSafe(Results.Pseudo, e.KeyCode, DateTime.Now)
+                    IssueResponse_ThreadSafe(Response.Pseudo, e.KeyCode, DateTime.Now)
 
             End Select
 
@@ -908,7 +962,7 @@ Public Class LdtForm
         'IssueTimerCommandSafe(TimerCommands.Stop, FormTimers.ResponseTimeTimer)
 
         'Noting a missing response
-        IssueResponse_ThreadSafe(Results.Missing, Keys.None, DateTime.Now)
+        IssueResponse_ThreadSafe(Response.Missing, Keys.None, DateTime.Now)
 
     End Sub
 
@@ -917,7 +971,7 @@ Public Class LdtForm
     ''' </summary>
     Public IncomingResponseSpinLock As New Threading.SpinLock
 
-    Private Sub IssueResponse_ThreadSafe(ByVal Result As Results, ByVal ButtonPressed As Keys, ByVal ResponseTime As DateTime)
+    Private Sub IssueResponse_ThreadSafe(ByVal Result As Response, ByVal ButtonPressed As Keys, ByVal ResponseTime As DateTime)
 
         If Me.InvokeRequired = True Then
             Me.Invoke(New IssueResponseDelegate(AddressOf IssueResponse_Unsafe), {Result, ButtonPressed, ResponseTime})
@@ -928,7 +982,7 @@ Public Class LdtForm
     End Sub
 
 
-    Private Sub IssueResponse_Unsafe(ByVal Result As Results, ByVal ButtonPressed As Keys, ByVal ResponseTime As DateTime)
+    Private Sub IssueResponse_Unsafe(ByVal Result As Response, ByVal ButtonPressed As Keys, ByVal ResponseTime As DateTime)
         ResponseTimeTimer.Stop()
         'IssueTimerCommandSafe(TimerCommands.Stop, FormTimers.ResponseTimeTimer)
 
@@ -963,12 +1017,12 @@ Public Class LdtForm
             End If
 
             'Changes colors on the form to note missing or valid responses
-            If Result = Results.Missing Then
+            If Result = Response.Missing Then
                 'Flashing the background to note a missing response
                 FlashBackground()
             Else
 
-                If Result = Results.Real Then
+                If Result = Response.Real Then
                     'Changes the color to DarkGreen if the answer was 'Real'
                     Background_TableLayoutPanel.BackColor = RealColor
                     Background_TableLayoutPanel.Invalidate()
@@ -1081,7 +1135,7 @@ Public Class TestSpecification
 
     Public Property NumberOfPractiseItems As Integer
 
-    'Public Property 
+    Public Property PractiseScoreLimit As Integer
 
     Public Property MinInterTrialInterval As Integer
     Public Property MaxInterTrialInterval As Integer
@@ -1106,15 +1160,15 @@ Public Class TestSpecification
     Public Shared RightSideKeys As New List(Of Keys) From {Keys.U, Keys.I, Keys.O, Keys.P, Keys.H, Keys.J, Keys.K, Keys.L, Keys.N, Keys.M}
 
 
-    Private Function GetBlockParentFolder() As String
+    Public Function GetBlockParentFolder() As String
         Return IO.Path.GetDirectoryName(TestSpecificationFilePath)
     End Function
 
     Private Function GetBlockFolder(ByVal IsPractiseTestMaterial As Boolean, Optional ByVal BlockNumber As Integer = 0) As String
         If IsPractiseTestMaterial = False Then
-            Return IO.Path.Combine(IO.Path.GetDirectoryName(TestSpecificationFilePath), "Block" & BlockNumber.ToString("00"))
+            Return IO.Path.Combine(GetBlockParentFolder, "Block" & BlockNumber.ToString("00"))
         Else
-            Return IO.Path.Combine(IO.Path.GetDirectoryName(TestSpecificationFilePath), "PractiseBlock")
+            Return IO.Path.Combine(GetBlockParentFolder, "PractiseBlock")
         End If
     End Function
 
@@ -1475,6 +1529,60 @@ Public Class TestMaterial
 
     End Function
 
+    Public Function GetProportionCorrect() As Double
+
+        Dim TestedTrials As Integer = 0
+        Dim CorrectTrials As Integer = 0
+
+        For Each Block In Me
+            For Each TestItem In Block.RealItems
+                If TestItem.Response = Response.NotPresented Then Continue For
+
+                TestedTrials += 1
+                If TestItem.Result = Result.Correct Then CorrectTrials += 1
+            Next
+
+            For Each TestItem In Block.PseudoItems
+                If TestItem.Response = Response.NotPresented Then Continue For
+
+                TestedTrials += 1
+                If TestItem.Result = Result.Correct Then CorrectTrials += 1
+            Next
+        Next
+
+        If TestedTrials > 0 Then
+            Return CorrectTrials / TestedTrials
+        Else
+            Return 0
+        End If
+
+    End Function
+
+    ''' <summary>
+    ''' Clears all test results in the current instance of TestMaterial and prepares the TestMaterial to be run again (useful to redo the practise test)
+    ''' </summary>
+    Public Sub ClearResults()
+
+        If IsPractiseTestMaterial = False Then
+            MsgBox("Only practise blocks can be reset!", , "Invalid operation")
+            Exit Sub
+        End If
+
+        For Each Block In Me
+
+            Block.PresentedItems = 0
+
+            For Each TestItem In Block.RealItems
+                TestItem.ClearResults()
+            Next
+
+            For Each TestItem In Block.PseudoItems
+                TestItem.ClearResults()
+            Next
+        Next
+
+    End Sub
+
 End Class
 
 Public Class Block
@@ -1494,11 +1602,11 @@ Public Class Block
         Dim UnpresentedItems As New List(Of TestItem)
 
         For Each Item In RealItems
-            If Item.Result = Results.NotPresented Then UnpresentedItems.Add(Item)
+            If Item.Response = Response.NotPresented Then UnpresentedItems.Add(Item)
         Next
 
         For Each Item In PseudoItems
-            If Item.Result = Results.NotPresented Then UnpresentedItems.Add(Item)
+            If Item.Response = Response.NotPresented Then UnpresentedItems.Add(Item)
         Next
 
         Return UnpresentedItems
@@ -1539,10 +1647,10 @@ Public Class TestItem
 
     Public CurrentVideo As Media = Nothing
 
-    Private _Result As Results = Results.NotPresented
-    Public ReadOnly Property Result As Results
+    Private _Response As Response = Response.NotPresented
+    Public ReadOnly Property Response As Response
         Get
-            Return _Result
+            Return _Response
         End Get
     End Property
 
@@ -1550,6 +1658,13 @@ Public Class TestItem
     Public ReadOnly Property ButtonPressed As Keys
         Get
             Return _ButtonPressed
+        End Get
+    End Property
+
+    Private _Result As Result = Result.NotPresented
+    Public ReadOnly Property Result As Result
+        Get
+            Return _Result
         End Get
     End Property
 
@@ -1588,7 +1703,7 @@ Public Class TestItem
         CurrentVideo = New Media(LibVLC, FilePath, FromType.FromPath)
     End Sub
 
-    Public Sub NewResponse(ByVal Result As Results, ByVal ButtonPressed As Keys, ByVal ResponseTime As DateTime, ByVal ResponseInterval As TimeSpan)
+    Public Sub NewResponse(ByVal Response As Response, ByVal ButtonPressed As Keys, ByVal ResponseTime As DateTime, ByVal ResponseInterval As TimeSpan)
 
         If ResponseGiven = True Then
             'Stops from given responses a second time ( which, by the way, should never occur...)
@@ -1597,10 +1712,30 @@ Public Class TestItem
             ResponseGiven = True
         End If
 
-        Me._Result = Result
+        Me._Response = Response
         Me._ButtonPressed = ButtonPressed
         Me._ResponseTime = ResponseTime
         Me._ResponseInterval = ResponseInterval
+
+        Select Case Response
+            Case Response.Real
+                If ItemType = ItemTypes.Real Then
+                    _Result = Result.Correct
+                Else
+                    _Result = Result.Incorrect
+                End If
+
+            Case Response.Pseudo
+                If ItemType = ItemTypes.Pseudo Then
+                    _Result = Result.Correct
+                Else
+                    _Result = Result.Incorrect
+                End If
+
+            Case Response.Missing
+                _Result = Result.Missing
+
+        End Select
 
     End Sub
 
@@ -1617,6 +1752,7 @@ Public Class TestItem
         HeadingList.Add("FileName")
         HeadingList.Add("FilePath")
         HeadingList.Add("ButtonPressed")
+        HeadingList.Add("Response")
         HeadingList.Add("Result")
         HeadingList.Add("ResponseInterval")
         HeadingList.Add("PlayCommandTime")
@@ -1653,6 +1789,7 @@ Public Class TestItem
         DataList.Add(FileName)
         DataList.Add(FilePath)
         DataList.Add(ButtonPressed.ToString)
+        DataList.Add(Response.ToString)
         DataList.Add(Result.ToString)
 
         DataList.Add(Math.Round(ResponseInterval.TotalMilliseconds))
@@ -1677,11 +1814,37 @@ Public Class TestItem
     End Function
 
 
+    ''' <summary>
+    ''' Clears all results and prepares the test item to be run again (useful to redo the practise test)
+    ''' </summary>
+    Public Sub ClearResults()
+
+        If ParentBlock.ParentTestMaterial.IsPractiseTestMaterial = False Then
+            MsgBox("Only practise blocks can be reset!", , "Invalid operation")
+            Exit Sub
+        End If
+
+        ResponseGiven = False
+        _ButtonPressed = Nothing
+        _ResponseTime = Nothing
+        _ResponseInterval = Nothing
+        _Response = Response.NotPresented
+        _Result = Result.NotPresented
+
+    End Sub
+
 End Class
 
-Public Enum Results
+Public Enum Response
     Real
     Pseudo
+    Missing
+    NotPresented
+End Enum
+
+Public Enum Result
+    Incorrect
+    Correct
     Missing
     NotPresented
 End Enum

@@ -8,11 +8,11 @@ Imports System.Runtime.InteropServices
 
 ' Review the values of the assembly attributes
 
-<Assembly: AssemblyTitle("LexicalDecisionTask")>
+<Assembly: AssemblyTitle("Video-Based Lexical Decision Task (VLDT)")>
 <Assembly: AssemblyDescription("")>
 <Assembly: AssemblyCompany("")>
-<Assembly: AssemblyProduct("LexicalDecisionTask")>
-<Assembly: AssemblyCopyright("Copyright ©  2022")>
+<Assembly: AssemblyProduct("Video-Based Lexical Decision Task (VLDT)")>
+<Assembly: AssemblyCopyright("Copyright © 2022 Erik Witte")>
 <Assembly: AssemblyTrademark("")>
 
 <Assembly: ComVisible(False)>

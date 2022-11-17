@@ -22,6 +22,7 @@ Partial Class LdtForm
     'Do not modify it using the code editor.
     <System.Diagnostics.DebuggerStepThrough()>
     Private Sub InitializeComponent()
+        Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(LdtForm))
         Me.Background_TableLayoutPanel = New System.Windows.Forms.TableLayoutPanel()
         Me.Content_SplitContainer = New System.Windows.Forms.SplitContainer()
         Me.VideoViewHolder_Panel = New System.Windows.Forms.Panel()
@@ -29,10 +30,10 @@ Partial Class LdtForm
         Me.TableLayoutPanel1 = New System.Windows.Forms.TableLayoutPanel()
         Me.Info_SplitContainer = New System.Windows.Forms.SplitContainer()
         Me.Info_RichTextBox = New System.Windows.Forms.RichTextBox()
-        Me.InstructionsTextBox = New System.Windows.Forms.TextBox()
         Me.Block_ProgressBar = New LexicalDecisionTask.ProgressBarWithText()
         Me.LeftResponseLetter_Label = New System.Windows.Forms.Label()
         Me.RightResponseLetter_Label = New System.Windows.Forms.Label()
+        Me.Instructions_Label = New System.Windows.Forms.Label()
         Me.Background_TableLayoutPanel.SuspendLayout()
         CType(Me.Content_SplitContainer, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.Content_SplitContainer.Panel1.SuspendLayout()
@@ -136,9 +137,9 @@ Partial Class LdtForm
         '
         'Info_SplitContainer.Panel2
         '
-        Me.Info_SplitContainer.Panel2.Controls.Add(Me.InstructionsTextBox)
+        Me.Info_SplitContainer.Panel2.Controls.Add(Me.Instructions_Label)
         Me.Info_SplitContainer.Size = New System.Drawing.Size(744, 154)
-        Me.Info_SplitContainer.SplitterDistance = 91
+        Me.Info_SplitContainer.SplitterDistance = 113
         Me.Info_SplitContainer.TabIndex = 5
         Me.Info_SplitContainer.TabStop = False
         Me.Info_SplitContainer.Visible = False
@@ -149,21 +150,9 @@ Partial Class LdtForm
         Me.Info_RichTextBox.Location = New System.Drawing.Point(0, 0)
         Me.Info_RichTextBox.Name = "Info_RichTextBox"
         Me.Info_RichTextBox.ReadOnly = True
-        Me.Info_RichTextBox.Size = New System.Drawing.Size(744, 91)
+        Me.Info_RichTextBox.Size = New System.Drawing.Size(744, 113)
         Me.Info_RichTextBox.TabIndex = 3
         Me.Info_RichTextBox.Text = ""
-        '
-        'InstructionsTextBox
-        '
-        Me.InstructionsTextBox.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.InstructionsTextBox.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.InstructionsTextBox.Location = New System.Drawing.Point(0, 0)
-        Me.InstructionsTextBox.Multiline = True
-        Me.InstructionsTextBox.Name = "InstructionsTextBox"
-        Me.InstructionsTextBox.ReadOnly = True
-        Me.InstructionsTextBox.Size = New System.Drawing.Size(744, 59)
-        Me.InstructionsTextBox.TabIndex = 2
-        Me.InstructionsTextBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center
         '
         'Block_ProgressBar
         '
@@ -210,12 +199,22 @@ Partial Class LdtForm
         Me.RightResponseLetter_Label.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
         Me.RightResponseLetter_Label.Visible = False
         '
+        'Instructions_Label
+        '
+        Me.Instructions_Label.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.Instructions_Label.Location = New System.Drawing.Point(0, 0)
+        Me.Instructions_Label.Name = "Instructions_Label"
+        Me.Instructions_Label.Size = New System.Drawing.Size(744, 37)
+        Me.Instructions_Label.TabIndex = 0
+        Me.Instructions_Label.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
+        '
         'LdtForm
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.ClientSize = New System.Drawing.Size(805, 450)
         Me.Controls.Add(Me.Background_TableLayoutPanel)
+        Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
         Me.KeyPreview = True
         Me.Name = "LdtForm"
         Me.Text = "Video-Based Lexical Decision Task (VLDT)"
@@ -229,14 +228,12 @@ Partial Class LdtForm
         Me.TableLayoutPanel1.ResumeLayout(False)
         Me.Info_SplitContainer.Panel1.ResumeLayout(False)
         Me.Info_SplitContainer.Panel2.ResumeLayout(False)
-        Me.Info_SplitContainer.Panel2.PerformLayout()
         CType(Me.Info_SplitContainer, System.ComponentModel.ISupportInitialize).EndInit()
         Me.Info_SplitContainer.ResumeLayout(False)
         Me.ResumeLayout(False)
 
     End Sub
     Friend WithEvents Background_TableLayoutPanel As TableLayoutPanel
-    Friend WithEvents InstructionsTextBox As TextBox
     Friend WithEvents Content_SplitContainer As SplitContainer
     Friend WithEvents VideoView As LibVLCSharp.WinForms.VideoView
     Friend WithEvents VideoViewHolder_Panel As Panel
@@ -246,4 +243,5 @@ Partial Class LdtForm
     Friend WithEvents Block_ProgressBar As ProgressBarWithText
     Friend WithEvents LeftResponseLetter_Label As Label
     Friend WithEvents RightResponseLetter_Label As Label
+    Friend WithEvents Instructions_Label As Label
 End Class

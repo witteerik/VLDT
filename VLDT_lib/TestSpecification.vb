@@ -212,4 +212,253 @@ Public Class TestSpecification
 
     End Function
 
+
+    Public Shared Function LoadTestSpecificationFile(ByVal TestSpecificationFilePath As String) As TestSpecification
+
+        Dim NewTestSpecification = New TestSpecification
+
+        'Storing the file path
+        NewTestSpecification.TestSpecificationFilePath = TestSpecificationFilePath
+
+        Dim InputLines() As String = System.IO.File.ReadAllLines(TestSpecificationFilePath, System.Text.Encoding.UTF8)
+
+        Dim ReadBlockOrders As Boolean = False
+        Dim ManualBlockOrders As New List(Of List(Of Integer))
+
+        For Each Line In InputLines
+
+            If Line.Trim = "" Then Continue For
+            If Line.Trim.StartsWith("//") Then Continue For
+
+            If ReadBlockOrders = False Then
+
+                If Line.ToLowerInvariant.Trim.StartsWith("<BlockOrders>".ToLowerInvariant) Then
+                    'Starts reading block orders
+                    ReadBlockOrders = True
+                    Continue For
+                End If
+
+                Dim LineValueSplit = Line.Trim.Split({"//"}, StringSplitOptions.None)(0).Trim.Split("=")
+
+                Dim LineVariable As String = LineValueSplit(0).Trim
+                'Skipping if no variable value is available
+                If LineValueSplit.Length = 1 Then Continue For
+                Dim VariableValueString As String = LineValueSplit(1).Trim
+
+                'Skipping if the variable value is empty
+                If VariableValueString = "" Then Continue For
+
+                Select Case LineVariable.ToLowerInvariant
+
+                    Case "GuiLanguage".ToLowerInvariant
+                        NewTestSpecification.GuiLanguage = VariableValueString
+
+                    Case "RandomSeed".ToLowerInvariant
+                        Dim TempValue As Integer
+                        If Integer.TryParse(VariableValueString, TempValue) = True Then
+                            NewTestSpecification.RandomSeed = TempValue
+                        Else
+                            MsgBox("Unable to read the value " & VariableValueString & " given for the variable " & LineVariable & " in the lexical decision task file (" & TestSpecificationFilePath & ") as an integer number. Cannot proceed.", MsgBoxStyle.Exclamation, "Invalid variable value!")
+                            Return Nothing
+                        End If
+
+                    Case "ResponseKeys".ToLowerInvariant
+                        NewTestSpecification.AvailableResponseKeys.Clear()
+                        Dim VariableValueStringSplit = VariableValueString.Split(",")
+                        Dim FailedReading As Boolean = False
+                        If VariableValueStringSplit.Length = 2 Then
+                            For i = 0 To 1
+                                Try
+
+                                    Dim NewKey As Keys = DirectCast([Enum].Parse(GetType(Keys), VariableValueStringSplit(i).Trim), Integer)
+                                    If TestSpecification.LeftSideKeys.Contains(NewKey) Or TestSpecification.RightSideKeys.Contains(NewKey) Then
+                                        NewTestSpecification.AvailableResponseKeys.Add(NewKey)
+                                    Else
+                                        MsgBox("The response key " & NewKey.ToString & " specified in the lexical decision task file (" & TestSpecificationFilePath & ") is not allowed." & vbCrLf & vbCrLf & "The following response keys are allowed: " & vbCrLf &
+                                               "Left side keys: " & String.Join(", ", TestSpecification.LeftSideKeys) & vbCrLf &
+                                               "Right side keys: " & String.Join(", ", TestSpecification.RightSideKeys) & vbCrLf & vbCrLf &
+                                               "Cannot proceed.", MsgBoxStyle.Exclamation, "Invalid response key value!")
+                                        Return Nothing
+                                    End If
+
+                                Catch ex As Exception
+                                    FailedReading = True
+                                End Try
+                            Next
+                        Else
+                            FailedReading = True
+                        End If
+
+                        If FailedReading = True Then
+                            MsgBox("Unable to interpret the value " & VariableValueString & " given for the variable " & LineVariable & " in the lexical decision task file (" & TestSpecificationFilePath & ") as two keyboard keys. Cannot proceed.", MsgBoxStyle.Exclamation, "Invalid variable value!")
+                            Return Nothing
+                        End If
+
+                    Case "RandomizeResponseKeys".ToLowerInvariant
+                        If Boolean.TryParse(VariableValueString, NewTestSpecification.RandomizeResponseKeys) = False Then
+                            MsgBox("Unable to interpret the value " & VariableValueString & " given for the variable " & LineVariable & " in the lexical decision task file (" & TestSpecificationFilePath & ") as a boolean value (True or False). Cannot proceed.", MsgBoxStyle.Exclamation, "Invalid variable value!")
+                            Return Nothing
+                        End If
+
+                    Case "BlockCount".ToLowerInvariant
+                        If Integer.TryParse(VariableValueString, NewTestSpecification.NumberOfBlocks) = False Then
+                            MsgBox("Unable to read the value " & VariableValueString & " given for the variable " & LineVariable & " in the lexical decision task file (" & TestSpecificationFilePath & ") as an integer number. Cannot proceed.", MsgBoxStyle.Exclamation, "Invalid variable value!")
+                            Return Nothing
+                        End If
+
+                    Case "TestItemCount".ToLowerInvariant
+                        If Integer.TryParse(VariableValueString, NewTestSpecification.NumberOfTestItems) = False Then
+                            MsgBox("Unable to read the value " & VariableValueString & " given for the variable " & LineVariable & " in the lexical decision task file (" & TestSpecificationFilePath & ") as an integer number. Cannot proceed.", MsgBoxStyle.Exclamation, "Invalid variable value!")
+                            Return Nothing
+                        End If
+
+                    Case "PractiseItemCount".ToLowerInvariant
+                        If Integer.TryParse(VariableValueString, NewTestSpecification.NumberOfPractiseItems) = False Then
+                            MsgBox("Unable to read the value " & VariableValueString & " given for the variable " & LineVariable & " in the lexical decision task file (" & TestSpecificationFilePath & ") as an integer number. Cannot proceed.", MsgBoxStyle.Exclamation, "Invalid variable value!")
+                            Return Nothing
+                        End If
+
+                    Case "PractiseScoreLimit".ToLowerInvariant
+                        If Integer.TryParse(VariableValueString, NewTestSpecification.PractiseScoreLimit) = False Then
+                            MsgBox("Unable to read the value " & VariableValueString & " given for the variable " & LineVariable & " in the lexical decision task file (" & TestSpecificationFilePath & ") as an integer number. Cannot proceed.", MsgBoxStyle.Exclamation, "Invalid variable value!")
+                            Return Nothing
+                        End If
+
+                    Case "MinInterTrialInterval".ToLowerInvariant
+                        If Integer.TryParse(VariableValueString, NewTestSpecification.MinInterTrialInterval) = False Then
+                            MsgBox("Unable to read the value " & VariableValueString & " given for the variable " & LineVariable & " in the lexical decision task file (" & TestSpecificationFilePath & ") as an integer number. Cannot proceed.", MsgBoxStyle.Exclamation, "Invalid variable value!")
+                            Return Nothing
+                        End If
+
+                    Case "MaxInterTrialInterval".ToLowerInvariant
+                        If Integer.TryParse(VariableValueString, NewTestSpecification.MaxInterTrialInterval) = False Then
+                            MsgBox("Unable to read the value " & VariableValueString & " given for the variable " & LineVariable & " in the lexical decision task file (" & TestSpecificationFilePath & ") as an integer number. Cannot proceed.", MsgBoxStyle.Exclamation, "Invalid variable value!")
+                            Return Nothing
+                        End If
+
+                    Case "MaxResponseTime".ToLowerInvariant
+                        If Integer.TryParse(VariableValueString, NewTestSpecification.MaxResponseTime) = False Then
+                            MsgBox("Unable to read the value " & VariableValueString & " given for the variable " & LineVariable & " in the lexical decision task file (" & TestSpecificationFilePath & ") as an integer number. Cannot proceed.", MsgBoxStyle.Exclamation, "Invalid variable value!")
+                            Return Nothing
+                        End If
+
+                    Case "HideVideoBetweenTrials".ToLowerInvariant
+                        If Boolean.TryParse(VariableValueString, NewTestSpecification.HideVideoBetweenTrials) = False Then
+                            MsgBox("Unable to interpret the value " & VariableValueString & " given for the variable " & LineVariable & " in the lexical decision task file (" & TestSpecificationFilePath & ") as a boolean value (True or False). Cannot proceed.", MsgBoxStyle.Exclamation, "Invalid variable value!")
+                            Return Nothing
+                        End If
+
+                    Case "HideVideoAtResponse".ToLowerInvariant
+                        If Boolean.TryParse(VariableValueString, NewTestSpecification.HideVideoAtResponse) = False Then
+                            MsgBox("Unable to interpret the value " & VariableValueString & " given for the variable " & LineVariable & " in the lexical decision task file (" & TestSpecificationFilePath & ") as a boolean value (True or False). Cannot proceed.", MsgBoxStyle.Exclamation, "Invalid variable value!")
+                            Return Nothing
+                        End If
+
+                    Case "PostPresentationResponsePeriod".ToLowerInvariant
+                        If Boolean.TryParse(VariableValueString, NewTestSpecification.PostPresentationResponsePeriod) = False Then
+                            MsgBox("Unable to interpret the value " & VariableValueString & " given for the variable " & LineVariable & " in the lexical decision task file (" & TestSpecificationFilePath & ") as a boolean value (True or False). Cannot proceed.", MsgBoxStyle.Exclamation, "Invalid variable value!")
+                            Return Nothing
+                        End If
+
+                    Case "ExportAfterEveryTrial".ToLowerInvariant
+                        If Boolean.TryParse(VariableValueString, NewTestSpecification.ExportAfterEveryTrial) = False Then
+                            MsgBox("Unable to interpret the value " & VariableValueString & " given for the variable " & LineVariable & " in the lexical decision task file (" & TestSpecificationFilePath & ") as a boolean value (True or False). Cannot proceed.", MsgBoxStyle.Exclamation, "Invalid variable value!")
+                            Return Nothing
+                        End If
+
+                    Case "BackupTimerInterval".ToLowerInvariant
+                        If Integer.TryParse(VariableValueString, NewTestSpecification.BackupTimerInterval) = False Then
+                            MsgBox("Unable to read the value " & VariableValueString & " given for the variable " & LineVariable & " in the lexical decision task file (" & TestSpecificationFilePath & ") as an integer number. Cannot proceed.", MsgBoxStyle.Exclamation, "Invalid variable value!")
+                            Return Nothing
+                        End If
+
+                    Case "RandomizeBlockOrder".ToLowerInvariant
+                        If Boolean.TryParse(VariableValueString, NewTestSpecification.RandomizeBlockOrder) = False Then
+                            MsgBox("Unable to interpret the value " & VariableValueString & " given for the variable " & LineVariable & " in the lexical decision task file (" & TestSpecificationFilePath & ") as a boolean value (True or False). Cannot proceed.", MsgBoxStyle.Exclamation, "Invalid variable value!")
+                            Return Nothing
+                        End If
+
+                    Case Else
+                        MsgBox("Unknown variable (" & LineVariable & ") detected in the lexical decision task file (" & TestSpecificationFilePath & "). Cannot proceed.", MsgBoxStyle.Exclamation, "Unkown variable!")
+                        Return Nothing
+                End Select
+
+            Else
+
+                If Line.ToLowerInvariant.Trim.StartsWith("</BlockOrders>".ToLowerInvariant) Then
+                    'Stopps reading block orders
+                    ReadBlockOrders = False
+                    Continue For
+                End If
+
+                Dim LineValueSplit = Line.Trim.Split({"//"}, StringSplitOptions.None)(0).Trim.Split(",")
+                Dim CurrentBlockOrder As New List(Of Integer)
+                For Each StringValue In LineValueSplit
+                    Dim TempValue As Integer
+                    If Integer.TryParse(StringValue.Trim, TempValue) = True Then
+                        CurrentBlockOrder.Add(TempValue)
+                    Else
+                        MsgBox("Unable to read the block order value " & StringValue.Trim & " given at the line " & Line & " in the lexical decision task file (" & TestSpecificationFilePath & ") as an integer number. Cannot proceed.", MsgBoxStyle.Exclamation, "Invalid block order value!")
+                        Return Nothing
+                    End If
+                Next
+
+                If CurrentBlockOrder.Count > 0 Then
+                    ManualBlockOrders.Add(CurrentBlockOrder)
+                End If
+
+            End If
+
+        Next
+
+        ' References the manual block orders
+        NewTestSpecification.ManualBlockOrders = ManualBlockOrders
+
+        'Checking if block orders are correctly setup
+        For Each BlockOrder In NewTestSpecification.ManualBlockOrders
+
+            '- The number of blocks in each block order must equal NumberOfBlocks
+            If BlockOrder.Count <> NewTestSpecification.NumberOfBlocks Then
+                MsgBox("The block order (" & String.Join(", ", BlockOrder) & ") specified in the lexical decision task file (" & TestSpecificationFilePath & ") must contain exactlyk " & NewTestSpecification.NumberOfBlocks & " (BlockCount) integers. Cannot proceed.", MsgBoxStyle.Exclamation, "Invalid block order value!")
+                Return Nothing
+            End If
+
+            '- The BlockOrders must contain all integers from 1 to BlockCount
+            For Block As Integer = 1 To NewTestSpecification.NumberOfBlocks
+                If Not BlockOrder.Contains(Block) Then
+                    MsgBox("The block order (" & String.Join(", ", BlockOrder) & ") specified in the lexical decision task file (" & TestSpecificationFilePath & ") lacks block number " & Block & ". Cannot proceed.", MsgBoxStyle.Exclamation, "Invalid block order value!")
+                    Return Nothing
+                End If
+            Next
+        Next
+
+        'Checks that a manual blockorder exist if RandomizeBlockOrder = False
+        If NewTestSpecification.RandomizeBlockOrder = False Then
+            If NewTestSpecification.ManualBlockOrders.Count = 0 Then
+                MsgBox("When RandomizeBlockOrder = False, at least one block order needs to be manually specified using the block order tag (<BlockOrder>) in the lexical decision task file (" & TestSpecificationFilePath & "). Cannot proceed.", MsgBoxStyle.Exclamation, "Invalid block order value!")
+                Return Nothing
+            End If
+        End If
+
+
+        'Check that MinInterTrialInterval is not higher than MaxInterTrialInterval and vice versa!
+        If NewTestSpecification.MinInterTrialInterval > NewTestSpecification.MaxInterTrialInterval Then
+            MsgBox("The value given for MinInterTrialInterval (" & NewTestSpecification.MinInterTrialInterval & ") must be lower than the value given for MaxInterTrialInterval (" & NewTestSpecification.MaxInterTrialInterval & ") in the lexical decision task file (" & TestSpecificationFilePath & "). Cannot proceed.", MsgBoxStyle.Exclamation, "Invalid variable value!")
+            Return Nothing
+        End If
+
+        If NewTestSpecification.MinInterTrialInterval = 0 Or NewTestSpecification.MaxInterTrialInterval = 0 Or NewTestSpecification.MaxResponseTime = 0 Then
+            MsgBox("The value given for the variables MinInterTrialInterval (" & NewTestSpecification.MinInterTrialInterval & "), MaxInterTrialInterval (" & NewTestSpecification.MaxInterTrialInterval & ") and MaxResponseTime (" & NewTestSpecification.MaxResponseTime & "), in the lexical decision task file (" & TestSpecificationFilePath & ") must all be higher than zero. Where values are zero they will be changed to 1 millisecond.", MsgBoxStyle.Information, "Information!")
+        End If
+
+        'Loading language strings from file
+        If Utils.GuiStrings.Load(NewTestSpecification) = False Then
+            Return Nothing
+        End If
+
+        Return NewTestSpecification
+
+    End Function
+
+
 End Class

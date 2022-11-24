@@ -66,13 +66,13 @@ Partial Class LdtForm
         Me.Background_TableLayoutPanel.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 90.0!))
         Me.Background_TableLayoutPanel.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 5.0!))
         Me.Background_TableLayoutPanel.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20.0!))
-        Me.Background_TableLayoutPanel.Size = New System.Drawing.Size(805, 450)
+        Me.Background_TableLayoutPanel.Size = New System.Drawing.Size(1233, 616)
         Me.Background_TableLayoutPanel.TabIndex = 1
         '
         'Content_SplitContainer
         '
         Me.Content_SplitContainer.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.Content_SplitContainer.Location = New System.Drawing.Point(27, 25)
+        Me.Content_SplitContainer.Location = New System.Drawing.Point(39, 33)
         Me.Content_SplitContainer.Name = "Content_SplitContainer"
         Me.Content_SplitContainer.Orientation = System.Windows.Forms.Orientation.Horizontal
         '
@@ -83,8 +83,8 @@ Partial Class LdtForm
         'Content_SplitContainer.Panel2
         '
         Me.Content_SplitContainer.Panel2.Controls.Add(Me.TableLayoutPanel1)
-        Me.Content_SplitContainer.Size = New System.Drawing.Size(750, 399)
-        Me.Content_SplitContainer.SplitterDistance = 205
+        Me.Content_SplitContainer.Size = New System.Drawing.Size(1153, 548)
+        Me.Content_SplitContainer.SplitterDistance = 281
         Me.Content_SplitContainer.TabIndex = 4
         '
         'VideoViewHolder_Panel
@@ -94,7 +94,7 @@ Partial Class LdtForm
         Me.VideoViewHolder_Panel.Dock = System.Windows.Forms.DockStyle.Fill
         Me.VideoViewHolder_Panel.Location = New System.Drawing.Point(0, 0)
         Me.VideoViewHolder_Panel.Name = "VideoViewHolder_Panel"
-        Me.VideoViewHolder_Panel.Size = New System.Drawing.Size(750, 205)
+        Me.VideoViewHolder_Panel.Size = New System.Drawing.Size(1153, 281)
         Me.VideoViewHolder_Panel.TabIndex = 7
         '
         'VideoView
@@ -105,7 +105,7 @@ Partial Class LdtForm
         Me.VideoView.Margin = New System.Windows.Forms.Padding(0)
         Me.VideoView.MediaPlayer = Nothing
         Me.VideoView.Name = "VideoView"
-        Me.VideoView.Size = New System.Drawing.Size(750, 205)
+        Me.VideoView.Size = New System.Drawing.Size(1153, 281)
         Me.VideoView.TabIndex = 6
         Me.VideoView.Text = "VideoView1"
         '
@@ -121,7 +121,7 @@ Partial Class LdtForm
         Me.TableLayoutPanel1.RowCount = 2
         Me.TableLayoutPanel1.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100.0!))
         Me.TableLayoutPanel1.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30.0!))
-        Me.TableLayoutPanel1.Size = New System.Drawing.Size(750, 190)
+        Me.TableLayoutPanel1.Size = New System.Drawing.Size(1153, 263)
         Me.TableLayoutPanel1.TabIndex = 3
         '
         'Info_SplitContainer
@@ -138,8 +138,8 @@ Partial Class LdtForm
         'Info_SplitContainer.Panel2
         '
         Me.Info_SplitContainer.Panel2.Controls.Add(Me.Instructions_Label)
-        Me.Info_SplitContainer.Size = New System.Drawing.Size(744, 154)
-        Me.Info_SplitContainer.SplitterDistance = 124
+        Me.Info_SplitContainer.Size = New System.Drawing.Size(1147, 227)
+        Me.Info_SplitContainer.SplitterDistance = 182
         Me.Info_SplitContainer.TabIndex = 5
         Me.Info_SplitContainer.TabStop = False
         Me.Info_SplitContainer.Visible = False
@@ -150,7 +150,7 @@ Partial Class LdtForm
         Me.Info_RichTextBox.Location = New System.Drawing.Point(0, 0)
         Me.Info_RichTextBox.Name = "Info_RichTextBox"
         Me.Info_RichTextBox.ReadOnly = True
-        Me.Info_RichTextBox.Size = New System.Drawing.Size(744, 124)
+        Me.Info_RichTextBox.Size = New System.Drawing.Size(1147, 182)
         Me.Info_RichTextBox.TabIndex = 3
         Me.Info_RichTextBox.Text = ""
         '
@@ -161,7 +161,7 @@ Partial Class LdtForm
         Me.Instructions_Label.Font = New System.Drawing.Font("Microsoft Sans Serif", 10.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.Instructions_Label.Location = New System.Drawing.Point(0, 0)
         Me.Instructions_Label.Name = "Instructions_Label"
-        Me.Instructions_Label.Size = New System.Drawing.Size(744, 26)
+        Me.Instructions_Label.Size = New System.Drawing.Size(1147, 41)
         Me.Instructions_Label.TabIndex = 0
         Me.Instructions_Label.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
         '
@@ -169,10 +169,10 @@ Partial Class LdtForm
         '
         Me.Block_ProgressBar.Dock = System.Windows.Forms.DockStyle.Fill
         Me.Block_ProgressBar.ForeColor = System.Drawing.Color.Red
-        Me.Block_ProgressBar.Location = New System.Drawing.Point(3, 163)
+        Me.Block_ProgressBar.Location = New System.Drawing.Point(3, 236)
         Me.Block_ProgressBar.Name = "Block_ProgressBar"
         Me.Block_ProgressBar.ShowProgressText = True
-        Me.Block_ProgressBar.Size = New System.Drawing.Size(744, 24)
+        Me.Block_ProgressBar.Size = New System.Drawing.Size(1147, 24)
         Me.Block_ProgressBar.Step = 1
         Me.Block_ProgressBar.TabIndex = 6
         Me.Block_ProgressBar.TextFont = New System.Drawing.Font("Microsoft Sans Serif", 10.0!, System.Drawing.FontStyle.Bold)
@@ -186,10 +186,10 @@ Partial Class LdtForm
         Me.LeftResponseLetter_Label.Dock = System.Windows.Forms.DockStyle.Fill
         Me.LeftResponseLetter_Label.Font = New System.Drawing.Font("Arial", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.LeftResponseLetter_Label.ForeColor = System.Drawing.Color.White
-        Me.LeftResponseLetter_Label.Location = New System.Drawing.Point(3, 430)
+        Me.LeftResponseLetter_Label.Location = New System.Drawing.Point(3, 587)
         Me.LeftResponseLetter_Label.Margin = New System.Windows.Forms.Padding(3)
         Me.LeftResponseLetter_Label.Name = "LeftResponseLetter_Label"
-        Me.LeftResponseLetter_Label.Size = New System.Drawing.Size(18, 17)
+        Me.LeftResponseLetter_Label.Size = New System.Drawing.Size(30, 26)
         Me.LeftResponseLetter_Label.TabIndex = 5
         Me.LeftResponseLetter_Label.Text = "Label1"
         Me.LeftResponseLetter_Label.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
@@ -202,10 +202,10 @@ Partial Class LdtForm
         Me.RightResponseLetter_Label.Dock = System.Windows.Forms.DockStyle.Fill
         Me.RightResponseLetter_Label.Font = New System.Drawing.Font("Arial", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.RightResponseLetter_Label.ForeColor = System.Drawing.Color.White
-        Me.RightResponseLetter_Label.Location = New System.Drawing.Point(783, 430)
+        Me.RightResponseLetter_Label.Location = New System.Drawing.Point(1198, 587)
         Me.RightResponseLetter_Label.Margin = New System.Windows.Forms.Padding(3)
         Me.RightResponseLetter_Label.Name = "RightResponseLetter_Label"
-        Me.RightResponseLetter_Label.Size = New System.Drawing.Size(19, 17)
+        Me.RightResponseLetter_Label.Size = New System.Drawing.Size(32, 26)
         Me.RightResponseLetter_Label.TabIndex = 6
         Me.RightResponseLetter_Label.Text = "Label2"
         Me.RightResponseLetter_Label.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
@@ -215,7 +215,7 @@ Partial Class LdtForm
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.ClientSize = New System.Drawing.Size(805, 450)
+        Me.ClientSize = New System.Drawing.Size(1233, 616)
         Me.Controls.Add(Me.Background_TableLayoutPanel)
         Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
         Me.KeyPreview = True

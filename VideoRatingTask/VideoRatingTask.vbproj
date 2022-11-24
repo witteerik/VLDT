@@ -4,20 +4,18 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{89CF71EC-34C5-413D-8242-C5E52DAB0910}</ProjectGuid>
+    <ProjectGuid>{DF017509-813A-4DE8-8987-13171C57B04E}</ProjectGuid>
     <OutputType>WinExe</OutputType>
-    <StartupObject>LexicalDecisionTask.My.MyApplication</StartupObject>
-    <RootNamespace>LexicalDecisionTask</RootNamespace>
-    <AssemblyName>Video-Based Lexical Decision Task</AssemblyName>
+    <StartupObject>VideoRatingTask.My.MyApplication</StartupObject>
+    <RootNamespace>VideoRatingTask</RootNamespace>
+    <AssemblyName>Video-Based Rating Task</AssemblyName>
     <FileAlignment>512</FileAlignment>
     <MyType>WindowsForms</MyType>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <Deterministic>true</Deterministic>
-    <NuGetPackageImportStamp>
-    </NuGetPackageImportStamp>
     <IsWebBootstrapper>false</IsWebBootstrapper>
-    <PublishUrl>C:\EriksDokument\source\Releases\VLDT 0.01 - PreRelease\</PublishUrl>
+    <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
     <UpdateEnabled>false</UpdateEnabled>
@@ -28,9 +26,8 @@
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
     <ApplicationRevision>0</ApplicationRevision>
-    <ApplicationVersion>0.2.0.0</ApplicationVersion>
+    <ApplicationVersion>0.1.0.0</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
-    <PublishWizardCompleted>true</PublishWizardCompleted>
     <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -40,7 +37,7 @@
     <DefineDebug>true</DefineDebug>
     <DefineTrace>true</DefineTrace>
     <OutputPath>bin\Debug\</OutputPath>
-    <DocumentationFile>Video-Based Lexical Decision Task.xml</DocumentationFile>
+    <DocumentationFile>Video-Based Rating Task.xml</DocumentationFile>
     <NoWarn>42016,41999,42017,42018,42019,42032,42036,42020,42021,42022</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
@@ -50,7 +47,7 @@
     <DefineTrace>true</DefineTrace>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
-    <DocumentationFile>Video-Based Lexical Decision Task.xml</DocumentationFile>
+    <DocumentationFile>Video-Based Rating Task.xml</DocumentationFile>
     <NoWarn>42016,41999,42017,42018,42019,42032,42036,42020,42021,42022</NoWarn>
   </PropertyGroup>
   <PropertyGroup>
@@ -65,54 +62,17 @@
   <PropertyGroup>
     <OptionInfer>On</OptionInfer>
   </PropertyGroup>
-  <PropertyGroup>
-    <ApplicationIcon>VLDT.ico</ApplicationIcon>
-  </PropertyGroup>
-  <PropertyGroup>
-    <ManifestCertificateThumbprint>CF969843C9BFD372197E87B1DD855CCD18338F07</ManifestCertificateThumbprint>
-  </PropertyGroup>
-  <PropertyGroup>
-    <ManifestKeyFile>LexicalDecisionTask_TemporaryKey.pfx</ManifestKeyFile>
-  </PropertyGroup>
-  <PropertyGroup>
-    <GenerateManifests>true</GenerateManifests>
-  </PropertyGroup>
-  <PropertyGroup>
-    <SignManifests>true</SignManifests>
-  </PropertyGroup>
   <ItemGroup>
-    <Reference Include="LibVLCSharp, Version=3.6.6.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>packages\LibVLCSharp.3.6.6\lib\net471\LibVLCSharp.dll</HintPath>
-    </Reference>
-    <Reference Include="LibVLCSharp.WinForms, Version=3.6.6.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>packages\LibVLCSharp.WinForms.3.6.6\lib\net40\LibVLCSharp.WinForms.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
-    <Reference Include="System.Buffers, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>packages\System.Buffers.4.5.1\lib\net461\System.Buffers.dll</HintPath>
-    </Reference>
     <Reference Include="System.Data" />
     <Reference Include="System.Deployment" />
     <Reference Include="System.Drawing" />
-    <Reference Include="System.Memory, Version=4.0.1.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>packages\System.Memory.4.5.4\lib\net461\System.Memory.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Numerics" />
-    <Reference Include="System.Numerics.Vectors, Version=4.1.4.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>packages\System.Numerics.Vectors.4.5.0\lib\net46\System.Numerics.Vectors.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=4.0.4.1, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>packages\System.Runtime.CompilerServices.Unsafe.4.5.3\lib\net461\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
-    </Reference>
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Net.Http" />
-    <Reference Include="VLDT_lib">
-      <HintPath>..\VLDT_lib\bin\Debug\VLDT_lib.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Import Include="Microsoft.VisualBasic" />
@@ -128,18 +88,6 @@
     <Import Include="System.Threading.Tasks" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="LdtForm.Designer.vb">
-      <DependentUpon>LdtForm.vb</DependentUpon>
-    </Compile>
-    <Compile Include="LdtForm.vb">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="PractiseScoreDialog.Designer.vb">
-      <DependentUpon>PractiseScoreDialog.vb</DependentUpon>
-    </Compile>
-    <Compile Include="PractiseScoreDialog.vb">
-      <SubType>Form</SubType>
-    </Compile>
     <Compile Include="My Project\AssemblyInfo.vb" />
     <Compile Include="My Project\Application.Designer.vb">
       <AutoGen>True</AutoGen>
@@ -156,32 +104,22 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
-    <Compile Include="VLDT_SplashScreen.Designer.vb">
-      <DependentUpon>VLDT_SplashScreen.vb</DependentUpon>
+    <Compile Include="VrtForm.Designer.vb">
+      <DependentUpon>VrtForm.vb</DependentUpon>
     </Compile>
-    <Compile Include="VLDT_SplashScreen.vb">
+    <Compile Include="VrtForm.vb">
       <SubType>Form</SubType>
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="LdtForm.resx">
-      <DependentUpon>LdtForm.vb</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="My Project\Resources.resx">
       <Generator>VbMyResourcesResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.vb</LastGenOutput>
       <CustomToolNamespace>My.Resources</CustomToolNamespace>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="PractiseScoreDialog.resx">
-      <DependentUpon>PractiseScoreDialog.vb</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="VLDT_SplashScreen.resx">
-      <DependentUpon>VLDT_SplashScreen.vb</DependentUpon>
-    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <None Include="LexicalDecisionTask_TemporaryKey.pfx" />
     <None Include="My Project\Application.myapp">
       <Generator>MyApplicationCodeGenerator</Generator>
       <LastGenOutput>Application.Designer.vb</LastGenOutput>
@@ -192,10 +130,6 @@
       <LastGenOutput>Settings.Designer.vb</LastGenOutput>
     </None>
     <None Include="App.config" />
-    <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="VLDT.ico" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.8">
@@ -210,11 +144,4 @@
     </BootstrapperPackage>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />
-  <Import Project="packages\VideoLAN.LibVLC.Windows.3.0.17.4\build\VideoLAN.LibVLC.Windows.targets" Condition="Exists('packages\VideoLAN.LibVLC.Windows.3.0.17.4\build\VideoLAN.LibVLC.Windows.targets')" />
-  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
-    <PropertyGroup>
-      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
-    </PropertyGroup>
-    <Error Condition="!Exists('packages\VideoLAN.LibVLC.Windows.3.0.17.4\build\VideoLAN.LibVLC.Windows.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\VideoLAN.LibVLC.Windows.3.0.17.4\build\VideoLAN.LibVLC.Windows.targets'))" />
-  </Target>
 </Project>

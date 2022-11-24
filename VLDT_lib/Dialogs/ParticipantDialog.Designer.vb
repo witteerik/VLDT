@@ -130,9 +130,9 @@ Partial Class ParticipantDialog
 
     End Sub
     Friend WithEvents OK_Button As System.Windows.Forms.Button
-    Friend WithEvents ParticipantID_Label As Label
-    Friend WithEvents TableLayoutPanel1 As TableLayoutPanel
-    Friend WithEvents ParticipantNr_Label As Label
-    Friend WithEvents Participant_ID_TextBox As TextBox
+    Friend WithEvents ParticipantID_Label As Windows.Forms.Label
+    Friend WithEvents TableLayoutPanel1 As Windows.Forms.TableLayoutPanel
+    Friend WithEvents ParticipantNr_Label As Windows.Forms.Label
+    Friend WithEvents Participant_ID_TextBox As Windows.Forms.TextBox
     Friend WithEvents Participant_Nr_IntegerParsingTextBox As VLDT_lib.IntegerParsingTextBox
 End Class

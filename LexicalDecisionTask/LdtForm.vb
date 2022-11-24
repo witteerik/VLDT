@@ -6,27 +6,18 @@ Public Class LdtForm
     Public MyLibVLC As LibVLC
 
     Public WithEvents VideoPlayer As MediaPlayer
-
-    Private TestSpecification As TestSpecification
-
-    Private RealKey As Keys
-
-    Private PseudoKey As Keys
-
-    Private RealColor As Color = Color.DarkGreen
-
-    Private PseudoColor As Color = Color.Red
-
     Private Randomizer As Random
 
+    Private CurrentTestSpecification As TestSpecification
+
+    Private RealKey As Keys
+    Private PseudoKey As Keys
+    Private RealColor As Color = Color.DarkGreen
+    Private PseudoColor As Color = Color.Red
     Private TestResultExportFolder As String = ""
-
     Private PractiseTestMaterial As TestMaterial = Nothing
-
     Private SharpTestMaterial As TestMaterial = Nothing
-
     Private ActiveTestMaterial As TestMaterial = Nothing
-
     Private ParticipantID As String = ""
 
     ''' <summary>
@@ -66,11 +57,8 @@ Public Class LdtForm
 
 
     Delegate Sub VideoViewVisibleDelegate(ByVal Visible As Boolean)
-
     Delegate Sub SetGuiModesDelegate(ByVal GuiMode As GuiModes)
-
     Delegate Sub IssueResponseDelegate(ByVal Result As Response, ByVal ButtonPressed As Keys, ByVal ResponseTime As DateTime)
-
     Delegate Sub NoArgumentsDelegate()
 
 
@@ -144,18 +132,14 @@ Public Class LdtForm
 
             Dim SelectedFilePath = fd.FileName
 
-            If LoadTestSpecificationFile(SelectedFilePath) = False Then
+            CurrentTestSpecification = TestSpecification.LoadTestSpecificationFile(SelectedFilePath)
+
+            If CurrentTestSpecification Is Nothing Then
                 MsgBox("Unable to load the lexical decision test file from: " & SelectedFilePath & vbCrLf & vbCrLf & "Unable to continue!", MsgBoxStyle.Exclamation, "Error loading file!")
                 ShutDownTimer.Start()
                 Exit Sub
             End If
         Else
-            ShutDownTimer.Start()
-            Exit Sub
-        End If
-
-        'Loading language strings from file
-        If Utils.GuiStrings.Load(TestSpecification) = False Then
             ShutDownTimer.Start()
             Exit Sub
         End If
@@ -190,8 +174,8 @@ Public Class LdtForm
         End If
 
         'Setting up the Form randomizer 
-        If TestSpecification.RandomSeed.HasValue = True Then
-            Randomizer = New Random(TestSpecification.RandomSeed)
+        If CurrentTestSpecification.RandomSeed.HasValue = True Then
+            Randomizer = New Random(CurrentTestSpecification.RandomSeed)
         Else
             Randomizer = New Random
         End If
@@ -210,26 +194,26 @@ Public Class LdtForm
 
 
         'Selecting response keys
-        If TestSpecification.RandomizeResponseKeys = True Then
+        If CurrentTestSpecification.RandomizeResponseKeys = True Then
 
             'Randomizing keys
             Dim RandomIndex As Integer = Randomizer.Next(0, 2)
-            RealKey = TestSpecification.AvailableResponseKeys(RandomIndex)
+            RealKey = CurrentTestSpecification.AvailableResponseKeys(RandomIndex)
             'Selecting the other available key for incorrect response
             If RandomIndex = 0 Then
-                PseudoKey = TestSpecification.AvailableResponseKeys(1)
+                PseudoKey = CurrentTestSpecification.AvailableResponseKeys(1)
             Else
-                PseudoKey = TestSpecification.AvailableResponseKeys(0)
+                PseudoKey = CurrentTestSpecification.AvailableResponseKeys(0)
             End If
 
         Else
             'Using keys in the specified order: Real, Pseudo, as given in the test file
             If ParticipantNumber Mod 2 = 0 Then
-                RealKey = TestSpecification.AvailableResponseKeys(0)
-                PseudoKey = TestSpecification.AvailableResponseKeys(1)
+                RealKey = CurrentTestSpecification.AvailableResponseKeys(0)
+                PseudoKey = CurrentTestSpecification.AvailableResponseKeys(1)
             Else
-                RealKey = TestSpecification.AvailableResponseKeys(1)
-                PseudoKey = TestSpecification.AvailableResponseKeys(0)
+                RealKey = CurrentTestSpecification.AvailableResponseKeys(1)
+                PseudoKey = CurrentTestSpecification.AvailableResponseKeys(0)
             End If
         End If
 
@@ -249,33 +233,33 @@ Public Class LdtForm
         End If
 
         'Setting the response time interval
-        ResponseTimeTimer.Interval = Math.Max(1, TestSpecification.MaxResponseTime)
+        ResponseTimeTimer.Interval = Math.Max(1, CurrentTestSpecification.MaxResponseTime)
 
         'Setting the backup timer interval
-        BackupTimer.Interval = TestSpecification.BackupTimerInterval
+        BackupTimer.Interval = CurrentTestSpecification.BackupTimerInterval
 
         'Creating the practise test material
-        PractiseTestMaterial = TestSpecification.CreateTestMaterial(True, MyLibVLC)
+        PractiseTestMaterial = CurrentTestSpecification.CreateTestMaterial(True, MyLibVLC)
         If PractiseTestMaterial Is Nothing Then
             ShutDownTimer.Start()
             Exit Sub
         End If
 
         'Creating the sharp test material
-        SharpTestMaterial = TestSpecification.CreateTestMaterial(False, MyLibVLC)
+        SharpTestMaterial = CurrentTestSpecification.CreateTestMaterial(False, MyLibVLC)
         If SharpTestMaterial Is Nothing Then
             ShutDownTimer.Start()
             Exit Sub
         End If
 
         'Setup practise test block order (n.b. only one block)
-        PractiseTestMaterial.SetupBlockOrder(TestSpecification, ParticipantNumber)
+        PractiseTestMaterial.SetupBlockOrder(CurrentTestSpecification, ParticipantNumber)
 
         'Setup sharp test block order
-        SharpTestMaterial.SetupBlockOrder(TestSpecification, ParticipantNumber)
+        SharpTestMaterial.SetupBlockOrder(CurrentTestSpecification, ParticipantNumber)
 
         'Setting block progress bar maximum
-        Block_ProgressBar.Maximum = TestSpecification.NumberOfBlocks
+        Block_ProgressBar.Maximum = CurrentTestSpecification.NumberOfBlocks
         Block_ProgressBar.Value = 0
 
         'Run Practise test
@@ -288,242 +272,6 @@ Public Class LdtForm
         Me.Close()
     End Sub
 
-
-    Private Function LoadTestSpecificationFile(ByVal TestSpecificationFilePath As String) As Boolean
-
-        TestSpecification = New TestSpecification
-
-        'Storing the file path
-        TestSpecification.TestSpecificationFilePath = TestSpecificationFilePath
-
-        Dim InputLines() As String = System.IO.File.ReadAllLines(TestSpecificationFilePath, System.Text.Encoding.UTF8)
-
-        Dim ReadBlockOrders As Boolean = False
-        Dim ManualBlockOrders As New List(Of List(Of Integer))
-
-        For Each Line In InputLines
-
-            If Line.Trim = "" Then Continue For
-            If Line.Trim.StartsWith("//") Then Continue For
-
-            If ReadBlockOrders = False Then
-
-                If Line.ToLowerInvariant.Trim.StartsWith("<BlockOrders>".ToLowerInvariant) Then
-                    'Starts reading block orders
-                    ReadBlockOrders = True
-                    Continue For
-                End If
-
-                Dim LineValueSplit = Line.Trim.Split({"//"}, StringSplitOptions.None)(0).Trim.Split("=")
-
-                Dim LineVariable As String = LineValueSplit(0).Trim
-                'Skipping if no variable value is available
-                If LineValueSplit.Length = 1 Then Continue For
-                Dim VariableValueString As String = LineValueSplit(1).Trim
-
-                'Skipping if the variable value is empty
-                If VariableValueString = "" Then Continue For
-
-                Select Case LineVariable.ToLowerInvariant
-
-                    Case "GuiLanguage".ToLowerInvariant
-                        TestSpecification.GuiLanguage = VariableValueString
-
-                    Case "RandomSeed".ToLowerInvariant
-                        Dim TempValue As Integer
-                        If Integer.TryParse(VariableValueString, TempValue) = True Then
-                            TestSpecification.RandomSeed = TempValue
-                        Else
-                            MsgBox("Unable to read the value " & VariableValueString & " given for the variable " & LineVariable & " in the lexical decision task file (" & TestSpecificationFilePath & ") as an integer number. Cannot proceed.", MsgBoxStyle.Exclamation, "Invalid variable value!")
-                            Return False
-                        End If
-
-                    Case "ResponseKeys".ToLowerInvariant
-                        TestSpecification.AvailableResponseKeys.Clear()
-                        Dim VariableValueStringSplit = VariableValueString.Split(",")
-                        Dim FailedReading As Boolean = False
-                        If VariableValueStringSplit.Length = 2 Then
-                            For i = 0 To 1
-                                Try
-
-                                    Dim NewKey As Keys = DirectCast([Enum].Parse(GetType(Keys), VariableValueStringSplit(i).Trim), Integer)
-                                    If TestSpecification.LeftSideKeys.Contains(NewKey) Or TestSpecification.RightSideKeys.Contains(NewKey) Then
-                                        TestSpecification.AvailableResponseKeys.Add(NewKey)
-                                    Else
-                                        MsgBox("The response key " & NewKey.ToString & " specified in the lexical decision task file (" & TestSpecificationFilePath & ") is not allowed." & vbCrLf & vbCrLf & "The following response keys are allowed: " & vbCrLf &
-                                               "Left side keys: " & String.Join(", ", TestSpecification.LeftSideKeys) & vbCrLf &
-                                               "Right side keys: " & String.Join(", ", TestSpecification.RightSideKeys) & vbCrLf & vbCrLf &
-                                               "Cannot proceed.", MsgBoxStyle.Exclamation, "Invalid response key value!")
-                                        Return False
-                                    End If
-
-                                Catch ex As Exception
-                                    FailedReading = True
-                                End Try
-                            Next
-                        Else
-                            FailedReading = True
-                        End If
-
-                        If FailedReading = True Then
-                            MsgBox("Unable to interpret the value " & VariableValueString & " given for the variable " & LineVariable & " in the lexical decision task file (" & TestSpecificationFilePath & ") as two keyboard keys. Cannot proceed.", MsgBoxStyle.Exclamation, "Invalid variable value!")
-                            Return False
-                        End If
-
-                    Case "RandomizeResponseKeys".ToLowerInvariant
-                        If Boolean.TryParse(VariableValueString, TestSpecification.RandomizeResponseKeys) = False Then
-                            MsgBox("Unable to interpret the value " & VariableValueString & " given for the variable " & LineVariable & " in the lexical decision task file (" & TestSpecificationFilePath & ") as a boolean value (True or False). Cannot proceed.", MsgBoxStyle.Exclamation, "Invalid variable value!")
-                        End If
-
-                    Case "BlockCount".ToLowerInvariant
-                        If Integer.TryParse(VariableValueString, TestSpecification.NumberOfBlocks) = False Then
-                            MsgBox("Unable to read the value " & VariableValueString & " given for the variable " & LineVariable & " in the lexical decision task file (" & TestSpecificationFilePath & ") as an integer number. Cannot proceed.", MsgBoxStyle.Exclamation, "Invalid variable value!")
-                            Return False
-                        End If
-
-                    Case "TestItemCount".ToLowerInvariant
-                        If Integer.TryParse(VariableValueString, TestSpecification.NumberOfTestItems) = False Then
-                            MsgBox("Unable to read the value " & VariableValueString & " given for the variable " & LineVariable & " in the lexical decision task file (" & TestSpecificationFilePath & ") as an integer number. Cannot proceed.", MsgBoxStyle.Exclamation, "Invalid variable value!")
-                            Return False
-                        End If
-
-                    Case "PractiseItemCount".ToLowerInvariant
-                        If Integer.TryParse(VariableValueString, TestSpecification.NumberOfPractiseItems) = False Then
-                            MsgBox("Unable to read the value " & VariableValueString & " given for the variable " & LineVariable & " in the lexical decision task file (" & TestSpecificationFilePath & ") as an integer number. Cannot proceed.", MsgBoxStyle.Exclamation, "Invalid variable value!")
-                            Return False
-                        End If
-
-                    Case "PractiseScoreLimit".ToLowerInvariant
-                        If Integer.TryParse(VariableValueString, TestSpecification.PractiseScoreLimit) = False Then
-                            MsgBox("Unable to read the value " & VariableValueString & " given for the variable " & LineVariable & " in the lexical decision task file (" & TestSpecificationFilePath & ") as an integer number. Cannot proceed.", MsgBoxStyle.Exclamation, "Invalid variable value!")
-                            Return False
-                        End If
-
-                    Case "MinInterTrialInterval".ToLowerInvariant
-                        If Integer.TryParse(VariableValueString, TestSpecification.MinInterTrialInterval) = False Then
-                            MsgBox("Unable to read the value " & VariableValueString & " given for the variable " & LineVariable & " in the lexical decision task file (" & TestSpecificationFilePath & ") as an integer number. Cannot proceed.", MsgBoxStyle.Exclamation, "Invalid variable value!")
-                            Return False
-                        End If
-
-                    Case "MaxInterTrialInterval".ToLowerInvariant
-                        If Integer.TryParse(VariableValueString, TestSpecification.MaxInterTrialInterval) = False Then
-                            MsgBox("Unable to read the value " & VariableValueString & " given for the variable " & LineVariable & " in the lexical decision task file (" & TestSpecificationFilePath & ") as an integer number. Cannot proceed.", MsgBoxStyle.Exclamation, "Invalid variable value!")
-                            Return False
-                        End If
-
-                    Case "MaxResponseTime".ToLowerInvariant
-                        If Integer.TryParse(VariableValueString, TestSpecification.MaxResponseTime) = False Then
-                            MsgBox("Unable to read the value " & VariableValueString & " given for the variable " & LineVariable & " in the lexical decision task file (" & TestSpecificationFilePath & ") as an integer number. Cannot proceed.", MsgBoxStyle.Exclamation, "Invalid variable value!")
-                            Return False
-                        End If
-
-                    Case "HideVideoBetweenTrials".ToLowerInvariant
-                        If Boolean.TryParse(VariableValueString, TestSpecification.HideVideoBetweenTrials) = False Then
-                            MsgBox("Unable to interpret the value " & VariableValueString & " given for the variable " & LineVariable & " in the lexical decision task file (" & TestSpecificationFilePath & ") as a boolean value (True or False). Cannot proceed.", MsgBoxStyle.Exclamation, "Invalid variable value!")
-                        End If
-
-                    Case "HideVideoAtResponse".ToLowerInvariant
-                        If Boolean.TryParse(VariableValueString, TestSpecification.HideVideoAtResponse) = False Then
-                            MsgBox("Unable to interpret the value " & VariableValueString & " given for the variable " & LineVariable & " in the lexical decision task file (" & TestSpecificationFilePath & ") as a boolean value (True or False). Cannot proceed.", MsgBoxStyle.Exclamation, "Invalid variable value!")
-                        End If
-
-                    Case "PostPresentationResponsePeriod".ToLowerInvariant
-                        If Boolean.TryParse(VariableValueString, TestSpecification.PostPresentationResponsePeriod) = False Then
-                            MsgBox("Unable to interpret the value " & VariableValueString & " given for the variable " & LineVariable & " in the lexical decision task file (" & TestSpecificationFilePath & ") as a boolean value (True or False). Cannot proceed.", MsgBoxStyle.Exclamation, "Invalid variable value!")
-                        End If
-
-                    Case "ExportAfterEveryTrial".ToLowerInvariant
-                        If Boolean.TryParse(VariableValueString, TestSpecification.ExportAfterEveryTrial) = False Then
-                            MsgBox("Unable to interpret the value " & VariableValueString & " given for the variable " & LineVariable & " in the lexical decision task file (" & TestSpecificationFilePath & ") as a boolean value (True or False). Cannot proceed.", MsgBoxStyle.Exclamation, "Invalid variable value!")
-                        End If
-
-                    Case "BackupTimerInterval".ToLowerInvariant
-                        If Integer.TryParse(VariableValueString, TestSpecification.BackupTimerInterval) = False Then
-                            MsgBox("Unable to read the value " & VariableValueString & " given for the variable " & LineVariable & " in the lexical decision task file (" & TestSpecificationFilePath & ") as an integer number. Cannot proceed.", MsgBoxStyle.Exclamation, "Invalid variable value!")
-                            Return False
-                        End If
-
-                    Case "RandomizeBlockOrder".ToLowerInvariant
-                        If Boolean.TryParse(VariableValueString, TestSpecification.RandomizeBlockOrder) = False Then
-                            MsgBox("Unable to interpret the value " & VariableValueString & " given for the variable " & LineVariable & " in the lexical decision task file (" & TestSpecificationFilePath & ") as a boolean value (True or False). Cannot proceed.", MsgBoxStyle.Exclamation, "Invalid variable value!")
-                        End If
-
-                    Case Else
-                        MsgBox("Unknown variable (" & LineVariable & ") detected in the lexical decision task file (" & TestSpecificationFilePath & "). Cannot proceed.", MsgBoxStyle.Exclamation, "Unkown variable!")
-                        Return False
-                End Select
-
-            Else
-
-                If Line.ToLowerInvariant.Trim.StartsWith("</BlockOrders>".ToLowerInvariant) Then
-                    'Stopps reading block orders
-                    ReadBlockOrders = False
-                    Continue For
-                End If
-
-                Dim LineValueSplit = Line.Trim.Split({"//"}, StringSplitOptions.None)(0).Trim.Split(",")
-                Dim CurrentBlockOrder As New List(Of Integer)
-                For Each StringValue In LineValueSplit
-                    Dim TempValue As Integer
-                    If Integer.TryParse(StringValue.Trim, TempValue) = True Then
-                        CurrentBlockOrder.Add(TempValue)
-                    Else
-                        MsgBox("Unable to read the block order value " & StringValue.Trim & " given at the line " & Line & " in the lexical decision task file (" & TestSpecificationFilePath & ") as an integer number. Cannot proceed.", MsgBoxStyle.Exclamation, "Invalid block order value!")
-                        Return False
-                    End If
-                Next
-
-                If CurrentBlockOrder.Count > 0 Then
-                    ManualBlockOrders.Add(CurrentBlockOrder)
-                End If
-
-            End If
-
-        Next
-
-        ' References the manual block orders
-        TestSpecification.ManualBlockOrders = ManualBlockOrders
-
-        'Checking if block orders are correctly setup
-        For Each BlockOrder In TestSpecification.ManualBlockOrders
-
-            '- The number of blocks in each block order must equal NumberOfBlocks
-            If BlockOrder.Count <> TestSpecification.NumberOfBlocks Then
-                MsgBox("The block order (" & String.Join(", ", BlockOrder) & ") specified in the lexical decision task file (" & TestSpecificationFilePath & ") must contain exactlyk " & TestSpecification.NumberOfBlocks & " (BlockCount) integers. Cannot proceed.", MsgBoxStyle.Exclamation, "Invalid block order value!")
-                Return False
-            End If
-
-            '- The BlockOrders must contain all integers from 1 to BlockCount
-            For Block As Integer = 1 To TestSpecification.NumberOfBlocks
-                If Not BlockOrder.Contains(Block) Then
-                    MsgBox("The block order (" & String.Join(", ", BlockOrder) & ") specified in the lexical decision task file (" & TestSpecificationFilePath & ") lacks block number " & Block & ". Cannot proceed.", MsgBoxStyle.Exclamation, "Invalid block order value!")
-                    Return False
-                End If
-            Next
-        Next
-
-        'Checks that a manual blockorder exist if RandomizeBlockOrder = False
-        If TestSpecification.RandomizeBlockOrder = False Then
-            If TestSpecification.ManualBlockOrders.Count = 0 Then
-                MsgBox("When RandomizeBlockOrder = False, at least one block order needs to be manually specified using the block order tag (<BlockOrder>) in the lexical decision task file (" & TestSpecificationFilePath & "). Cannot proceed.", MsgBoxStyle.Exclamation, "Invalid block order value!")
-                Return False
-            End If
-        End If
-
-
-        'Check that MinInterTrialInterval is not higher than MaxInterTrialInterval and vice versa!
-        If TestSpecification.MinInterTrialInterval > TestSpecification.MaxInterTrialInterval Then
-            MsgBox("The value given for MinInterTrialInterval (" & TestSpecification.MinInterTrialInterval & ") must be lower than the value given for MaxInterTrialInterval (" & TestSpecification.MaxInterTrialInterval & ") in the lexical decision task file (" & TestSpecificationFilePath & "). Cannot proceed.", MsgBoxStyle.Exclamation, "Invalid variable value!")
-            Return False
-        End If
-
-        If TestSpecification.MinInterTrialInterval = 0 Or TestSpecification.MaxInterTrialInterval = 0 Or TestSpecification.MaxResponseTime = 0 Then
-            MsgBox("The value given for the variables MinInterTrialInterval (" & TestSpecification.MinInterTrialInterval & "), MaxInterTrialInterval (" & TestSpecification.MaxInterTrialInterval & ") and MaxResponseTime (" & TestSpecification.MaxResponseTime & "), in the lexical decision task file (" & TestSpecificationFilePath & ") must all be higher than zero. Where values are zero they will be changed to 1 millisecond.", MsgBoxStyle.Information, "Information!")
-        End If
-
-        Return True
-
-    End Function
 
     Public Enum GuiModes
         Info
@@ -588,9 +336,9 @@ Public Class LdtForm
 
         End Select
         Content_SplitContainer.Invalidate()
-            Content_SplitContainer.Update()
-            Info_SplitContainer.Invalidate()
-            Info_SplitContainer.Update()
+        Content_SplitContainer.Update()
+        Info_SplitContainer.Invalidate()
+        Info_SplitContainer.Update()
 
     End Sub
 
@@ -606,7 +354,7 @@ Public Class LdtForm
 
         Instructions_Label.Text = Utils.GetGuiString(Utils.GuiStrings.GuiStringKeys.StartBySpace)
 
-        Info_RichTextBox.LoadFile(IO.Path.Combine(TestSpecification.GetBlockParentFolder(), "Info.rtf"))
+        Info_RichTextBox.LoadFile(IO.Path.Combine(CurrentTestSpecification.GetBlockParentFolder(), "Info.rtf"))
 
     End Sub
 
@@ -645,7 +393,7 @@ Public Class LdtForm
             'Check if the user seemed to understand the task
             Dim PractiseScore = ActiveTestMaterial.GetProportionCorrect
 
-            If PractiseScore < TestSpecification.PractiseScoreLimit Then
+            If PractiseScore < CurrentTestSpecification.PractiseScoreLimit Then
 
                 Dim PractiseScoreDialog As New PractiseScoreDialog
                 PractiseScoreDialog.SetScore(PractiseScore)
@@ -740,7 +488,7 @@ Public Class LdtForm
         VideoEnded = False
 
         'Exporting last trial if ExportAfterEveryTrial is True
-        If TestSpecification.ExportAfterEveryTrial = True Then
+        If CurrentTestSpecification.ExportAfterEveryTrial = True Then
             If CurrentItem IsNot Nothing Then
                 Dim TrialExportFileName As String = ActiveTestMaterial.CreateExportFileName(ParticipantID, New SortedSet(Of Integer) From {ActiveTestMaterial.GetCurrentBlockNumber})
 
@@ -796,7 +544,7 @@ Public Class LdtForm
         CurrentItem = NextEvent.NextTrialItem
 
         'Starts the trial using the StartTrialTimer
-        StartTrialTimer.Interval = Math.Max(1, Randomizer.Next(TestSpecification.MinInterTrialInterval, TestSpecification.MaxInterTrialInterval) - TrialInitiationTimer.Interval)
+        StartTrialTimer.Interval = Math.Max(1, Randomizer.Next(CurrentTestSpecification.MinInterTrialInterval, CurrentTestSpecification.MaxInterTrialInterval) - TrialInitiationTimer.Interval)
         StartTrialTimer.Start()
         'IssueTimerCommandSafe(TimerCommands.Start, FormTimers.StartTrialTimer)
 
@@ -862,7 +610,7 @@ Public Class LdtForm
 
 
             ' Shows the video if it has been hidden between trials, or if it is the first item presented in the current block
-            If TestSpecification.HideVideoBetweenTrials = True Or CurrentItem.WithinBlock_TrialPresentationOrder = 1 Then SetVideoViewVisible_ThreadSafe(True)
+            If CurrentTestSpecification.HideVideoBetweenTrials = True Or CurrentItem.WithinBlock_TrialPresentationOrder = 1 Then SetVideoViewVisible_ThreadSafe(True)
 
             'Notes the time when the video has appeared (this should only be needed if HideVideoBetweenTrials is True, and then gives a measure of the time it takes to refresh the screen. The difference between PresentationTime and VideoVisibleTime should however be very small, possibly up to a few milliseconds.)
             CurrentItem.VideoVisibleTime = DateTime.Now
@@ -877,7 +625,7 @@ Public Class LdtForm
             'VideoPlayer.Size(0, px, py)
 
             'Starts the response time timer, if PostPresentationResponsePeriod = False (i.e. the timer should be started at the START of the completed stimulus presentation) 
-            If TestSpecification.PostPresentationResponsePeriod = False Then ResponseTimeTimer.Start()
+            If CurrentTestSpecification.PostPresentationResponsePeriod = False Then ResponseTimeTimer.Start()
             'If TestSpecification.PostPresentationResponsePeriod = False Then IssueTimerCommandSafe(TimerCommands.Start, FormTimers.ResponseTimeTimer)
 
             'Starts the timer that activates the response key handlers
@@ -911,7 +659,7 @@ Public Class LdtForm
         VideoEnded = True
 
         'Hides the videp player if HideVideoBetweenTrials is True 
-        If TestSpecification.HideVideoBetweenTrials = True Then SetVideoViewVisible_ThreadSafe(False)
+        If CurrentTestSpecification.HideVideoBetweenTrials = True Then SetVideoViewVisible_ThreadSafe(False)
 
         'Sets the end of presentation time
         CurrentItem.VideoEndTime = DateTime.Now
@@ -925,7 +673,7 @@ Public Class LdtForm
         Else
 
             'If not, starting the response time timer, if PostPresentationResponsePeriod = True (i.e. the timer should be started AFTER the completed stimulus presentation). Otherwise it will already have been started.
-            If TestSpecification.PostPresentationResponsePeriod = True Then ResponseTimeTimer.Start()
+            If CurrentTestSpecification.PostPresentationResponsePeriod = True Then ResponseTimeTimer.Start()
             'If TestSpecification.PostPresentationResponsePeriod = True Then IssueTimerCommandSafe(TimerCommands.Start, FormTimers.ResponseTimeTimer)
         End If
 
@@ -1030,7 +778,7 @@ Public Class LdtForm
             CurrentItem.NewResponse(Result, ButtonPressed, ResponseTime, TimedResponseStopWatch.Elapsed)
 
             'Hides the video if HideVideoAtResponse is True (and also HideVideoBetweenTrials is True).
-            If TestSpecification.HideVideoBetweenTrials = True And TestSpecification.HideVideoAtResponse = True Then
+            If CurrentTestSpecification.HideVideoBetweenTrials = True And CurrentTestSpecification.HideVideoAtResponse = True Then
 
                 'Notes that the video has been stopped/hidden
                 VideoEnded = True

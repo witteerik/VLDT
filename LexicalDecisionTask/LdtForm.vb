@@ -146,7 +146,7 @@ Public Class LdtForm
 
         'Getting the folder in which to store the results
         Dim fbd = New FolderBrowserDialog()
-        fbd.Description = Utils.GetGuiString(Utils.GuiStrings.GuiStringKeys.SelectFolder)
+        fbd.Description = Utils.GetGuiString(Utils.GuiStrings.VldtGuiStringKeys.SelectFolder)
         fbd.ShowNewFolderButton = True
         fbd.SelectedPath = My.Computer.FileSystem.SpecialDirectories.MyDocuments
 
@@ -352,7 +352,7 @@ Public Class LdtForm
 
         ActivateKeyDownHandler()
 
-        Instructions_Label.Text = Utils.GetGuiString(Utils.GuiStrings.GuiStringKeys.StartBySpace)
+        Instructions_Label.Text = Utils.GetGuiString(Utils.GuiStrings.VldtGuiStringKeys.StartBySpace)
 
         Info_RichTextBox.LoadFile(IO.Path.Combine(CurrentTestSpecification.GetBlockParentFolder(), "Info.rtf"))
 
@@ -368,7 +368,7 @@ Public Class LdtForm
 
         ActivateKeyDownHandler()
 
-        Instructions_Label.Text = Utils.GetGuiString(Utils.GuiStrings.GuiStringKeys.StartBySpace)
+        Instructions_Label.Text = Utils.GetGuiString(Utils.GuiStrings.VldtGuiStringKeys.StartBySpace)
 
     End Sub
 
@@ -423,7 +423,7 @@ Public Class LdtForm
             Block_ProgressBar.ShowProgressText = True
             Block_ProgressBar.PerformStep()
 
-            Instructions_Label.Text = Utils.GetGuiString(Utils.GuiStrings.GuiStringKeys.FinishedTest) & vbCrLf & vbCrLf & Utils.GetGuiString(Utils.GuiStrings.GuiStringKeys.CloseApp)
+            Instructions_Label.Text = Utils.GetGuiString(Utils.GuiStrings.VldtGuiStringKeys.FinishedTest) & vbCrLf & vbCrLf & Utils.GetGuiString(Utils.GuiStrings.VldtGuiStringKeys.CloseApp)
 
         End If
 
@@ -441,7 +441,7 @@ Public Class LdtForm
 
     Private Sub NewBlock_Unsafe()
 
-        Instructions_Label.Text = Utils.GetGuiString(Utils.GuiStrings.GuiStringKeys.StartBySpace)
+        Instructions_Label.Text = Utils.GetGuiString(Utils.GuiStrings.VldtGuiStringKeys.StartBySpace)
 
         Block_ProgressBar.PerformStep()
 

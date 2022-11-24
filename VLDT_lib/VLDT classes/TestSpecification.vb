@@ -452,7 +452,9 @@ Public Class TestSpecification
         End If
 
         'Loading language strings from file
-        If Utils.GuiStrings.Load(NewTestSpecification) = False Then
+        Dim GuiStringsFilePath = IO.Path.Combine(NewTestSpecification.GetBlockParentFolder(), "GuiStrings.txt")
+
+        If Utils.GuiStrings.Load(GuiStringsFilePath, NewTestSpecification.GuiLanguage, GetType(Utils.VldtGuiStringKeys)) = False Then
             Return Nothing
         End If
 

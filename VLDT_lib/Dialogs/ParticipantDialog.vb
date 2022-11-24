@@ -37,10 +37,10 @@ Public Class ParticipantDialog
 
     Private Sub ParticipantDialog_Load(sender As Object, e As EventArgs) Handles MyBase.Load
 
-        Me.Text = Utils.GetGuiString(Utils.GuiStrings.GuiStringKeys.AppPtcTitle)
-        ParticipantID_Label.Text = Utils.GetGuiString(Utils.GuiStrings.GuiStringKeys.AppPtcID)
-        ParticipantNr_Label.Text = Utils.GetGuiString(Utils.GuiStrings.GuiStringKeys.AppPtcNr)
-        OK_Button.Text = Utils.GetGuiString(Utils.GuiStrings.GuiStringKeys.AppPtcOK)
+        Me.Text = Utils.GetGuiString(Utils.GuiStrings.VldtGuiStringKeys.AppPtcTitle)
+        ParticipantID_Label.Text = Utils.GetGuiString(Utils.GuiStrings.VldtGuiStringKeys.AppPtcID)
+        ParticipantNr_Label.Text = Utils.GetGuiString(Utils.GuiStrings.VldtGuiStringKeys.AppPtcNr)
+        OK_Button.Text = Utils.GetGuiString(Utils.GuiStrings.VldtGuiStringKeys.AppPtcOK)
 
     End Sub
 End Class

@@ -31,9 +31,9 @@ Partial Class LdtForm
         Me.Info_SplitContainer = New System.Windows.Forms.SplitContainer()
         Me.Info_RichTextBox = New System.Windows.Forms.RichTextBox()
         Me.Instructions_Label = New System.Windows.Forms.Label()
-        Me.Block_ProgressBar = New VLDT_lib.ProgressBarWithText()
         Me.LeftResponseLetter_Label = New System.Windows.Forms.Label()
         Me.RightResponseLetter_Label = New System.Windows.Forms.Label()
+        Me.Block_ProgressBar = New VLDT_lib.ProgressBarWithText()
         Me.Background_TableLayoutPanel.SuspendLayout()
         CType(Me.Content_SplitContainer, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.Content_SplitContainer.Panel1.SuspendLayout()
@@ -165,20 +165,6 @@ Partial Class LdtForm
         Me.Instructions_Label.TabIndex = 0
         Me.Instructions_Label.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
         '
-        'Block_ProgressBar
-        '
-        Me.Block_ProgressBar.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.Block_ProgressBar.ForeColor = System.Drawing.Color.Red
-        Me.Block_ProgressBar.Location = New System.Drawing.Point(3, 236)
-        Me.Block_ProgressBar.Name = "Block_ProgressBar"
-        Me.Block_ProgressBar.ShowProgressText = True
-        Me.Block_ProgressBar.Size = New System.Drawing.Size(1147, 24)
-        Me.Block_ProgressBar.Step = 1
-        Me.Block_ProgressBar.TabIndex = 6
-        Me.Block_ProgressBar.TextFont = New System.Drawing.Font("Microsoft Sans Serif", 10.0!, System.Drawing.FontStyle.Bold)
-        Me.Block_ProgressBar.Value = 60
-        Me.Block_ProgressBar.Visible = False
-        '
         'LeftResponseLetter_Label
         '
         Me.LeftResponseLetter_Label.BackColor = System.Drawing.SystemColors.Control
@@ -210,6 +196,20 @@ Partial Class LdtForm
         Me.RightResponseLetter_Label.Text = "Label2"
         Me.RightResponseLetter_Label.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
         Me.RightResponseLetter_Label.Visible = False
+        '
+        'Block_ProgressBar
+        '
+        Me.Block_ProgressBar.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.Block_ProgressBar.ForeColor = System.Drawing.Color.Red
+        Me.Block_ProgressBar.Location = New System.Drawing.Point(3, 236)
+        Me.Block_ProgressBar.Name = "Block_ProgressBar"
+        Me.Block_ProgressBar.ShowProgressText = True
+        Me.Block_ProgressBar.Size = New System.Drawing.Size(1147, 24)
+        Me.Block_ProgressBar.Step = 1
+        Me.Block_ProgressBar.TabIndex = 6
+        Me.Block_ProgressBar.TextFont = New System.Drawing.Font("Microsoft Sans Serif", 10.0!, System.Drawing.FontStyle.Bold)
+        Me.Block_ProgressBar.Value = 60
+        Me.Block_ProgressBar.Visible = False
         '
         'LdtForm
         '

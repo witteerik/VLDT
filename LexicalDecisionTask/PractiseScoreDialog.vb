@@ -20,13 +20,13 @@ Public Class PractiseScoreDialog
 
     Private Sub PractiseScoreDialog_Load(sender As Object, e As EventArgs) Handles MyBase.Load
 
-        Me.Text = Utils.GetGuiString(Utils.GuiStrings.GuiStringKeys.PractiseTitle)
+        Me.Text = Utils.GetGuiString(Utils.GuiStrings.VldtGuiStringKeys.PractiseTitle)
 
-        Info1_Label.Text = Utils.GetGuiString(Utils.GuiStrings.GuiStringKeys.PractiseText1)
-        Info3_Label.Text = Utils.GetGuiString(Utils.GuiStrings.GuiStringKeys.PractiseText2)
+        Info1_Label.Text = Utils.GetGuiString(Utils.GuiStrings.VldtGuiStringKeys.PractiseText1)
+        Info3_Label.Text = Utils.GetGuiString(Utils.GuiStrings.VldtGuiStringKeys.PractiseText2)
 
-        REDO_Button.Text = Utils.GetGuiString(Utils.GuiStrings.GuiStringKeys.PractiseREDO)
-        SKIP_Button.Text = Utils.GetGuiString(Utils.GuiStrings.GuiStringKeys.PractiseSKIP)
+        REDO_Button.Text = Utils.GetGuiString(Utils.GuiStrings.VldtGuiStringKeys.PractiseREDO)
+        SKIP_Button.Text = Utils.GetGuiString(Utils.GuiStrings.VldtGuiStringKeys.PractiseSKIP)
 
     End Sub
 End Class

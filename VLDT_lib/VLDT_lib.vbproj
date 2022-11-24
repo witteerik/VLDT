@@ -87,7 +87,13 @@
     <Import Include="System.Threading.Tasks" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Block.vb" />
+    <Compile Include="Controls\ChangeItemButton.vb">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Controls\ItemRatingPanel.vb">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="VLDT classes\Block.vb" />
     <Compile Include="Dialogs\ParticipantDialog.designer.vb">
       <DependentUpon>ParticipantDialog.vb</DependentUpon>
     </Compile>
@@ -97,6 +103,7 @@
     <Compile Include="Controls\IntegerParsingTextBox.vb">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="GuiStrings.vb" />
     <Compile Include="My Project\AssemblyInfo.vb" />
     <Compile Include="My Project\Application.Designer.vb">
       <AutoGen>True</AutoGen>
@@ -115,9 +122,9 @@
     <Compile Include="Controls\ProgressBarWithText.vb">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="TestItem.vb" />
-    <Compile Include="TestMaterial.vb" />
-    <Compile Include="TestSpecification.vb" />
+    <Compile Include="VLDT classes\TestItem.vb" />
+    <Compile Include="VLDT classes\TestMaterial.vb" />
+    <Compile Include="VLDT classes\TestSpecification.vb" />
     <Compile Include="Utils.vb" />
   </ItemGroup>
   <ItemGroup>

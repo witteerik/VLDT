@@ -1,4 +1,4 @@
-﻿Imports System.Windows.Forms
+﻿Imports VLDT_lib
 
 Public Class PractiseScoreDialog
 

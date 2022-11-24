@@ -31,7 +31,7 @@ Partial Class LdtForm
         Me.Info_SplitContainer = New System.Windows.Forms.SplitContainer()
         Me.Info_RichTextBox = New System.Windows.Forms.RichTextBox()
         Me.Instructions_Label = New System.Windows.Forms.Label()
-        Me.Block_ProgressBar = New LexicalDecisionTask.ProgressBarWithText()
+        Me.Block_ProgressBar = New VLDT_lib.ProgressBarWithText()
         Me.LeftResponseLetter_Label = New System.Windows.Forms.Label()
         Me.RightResponseLetter_Label = New System.Windows.Forms.Label()
         Me.Background_TableLayoutPanel.SuspendLayout()
@@ -243,7 +243,7 @@ Partial Class LdtForm
     Friend WithEvents TableLayoutPanel1 As TableLayoutPanel
     Friend WithEvents Info_RichTextBox As RichTextBox
     Friend WithEvents Info_SplitContainer As SplitContainer
-    Friend WithEvents Block_ProgressBar As ProgressBarWithText
+    Friend WithEvents Block_ProgressBar As VLDT_lib.ProgressBarWithText
     Friend WithEvents LeftResponseLetter_Label As Label
     Friend WithEvents RightResponseLetter_Label As Label
     Friend WithEvents Instructions_Label As Label

@@ -28,7 +28,7 @@ Partial Class ParticipantDialog
         Me.ParticipantNr_Label = New System.Windows.Forms.Label()
         Me.Participant_ID_TextBox = New System.Windows.Forms.TextBox()
         Me.TableLayoutPanel1 = New System.Windows.Forms.TableLayoutPanel()
-        Me.Participant_Nr_IntegerParsingTextBox = New LexicalDecisionTask.IntegerParsingTextBox()
+        Me.Participant_Nr_IntegerParsingTextBox = New VLDT_lib.IntegerParsingTextBox()
         Me.TableLayoutPanel1.SuspendLayout()
         Me.SuspendLayout()
         '
@@ -134,5 +134,5 @@ Partial Class ParticipantDialog
     Friend WithEvents TableLayoutPanel1 As TableLayoutPanel
     Friend WithEvents ParticipantNr_Label As Label
     Friend WithEvents Participant_ID_TextBox As TextBox
-    Friend WithEvents Participant_Nr_IntegerParsingTextBox As IntegerParsingTextBox
+    Friend WithEvents Participant_Nr_IntegerParsingTextBox As VLDT_lib.IntegerParsingTextBox
 End Class

@@ -153,10 +153,15 @@ Public Class LdtForm
             Exit Sub
         End If
 
+        'Loading language strings from file
+        If Utils.GuiStrings.Load(TestSpecification) = False Then
+            ShutDownTimer.Start()
+            Exit Sub
+        End If
 
         'Getting the folder in which to store the results
         Dim fbd = New FolderBrowserDialog()
-        fbd.Description = "Please select a folder in which to store test results, and then click OK!"
+        fbd.Description = Utils.GetGuiString(Utils.GuiStrings.GuiStringKeys.SelectFolder)
         fbd.ShowNewFolderButton = True
         fbd.SelectedPath = My.Computer.FileSystem.SpecialDirectories.MyDocuments
 
@@ -167,7 +172,7 @@ Public Class LdtForm
 
             'Trying to save a log message to the output folder (just to check that it works)
             Try
-                Utils.SendInfoToLog("Initiated lexical descition test.",, OutputFolder)
+                Utils.SendInfoToLog("Initiated lexical decision test. Test results wil be saved in the folder: " & OutputFolder,, OutputFolder)
 
                 'String the output folder
                 TestResultExportFolder = OutputFolder
@@ -319,6 +324,10 @@ Public Class LdtForm
                 If VariableValueString = "" Then Continue For
 
                 Select Case LineVariable.ToLowerInvariant
+
+                    Case "GuiLanguage".ToLowerInvariant
+                        TestSpecification.GuiLanguage = VariableValueString
+
                     Case "RandomSeed".ToLowerInvariant
                         Dim TempValue As Integer
                         If Integer.TryParse(VariableValueString, TempValue) = True Then
@@ -531,6 +540,9 @@ Public Class LdtForm
 
     Private Sub SetGuiMode_Unsafe(ByVal GuiMode As GuiModes)
 
+        'Storing the new GuiMode
+        CurrentGuiMode = GuiMode
+
         'Shows the reponse labels
         LeftResponseLetter_Label.Visible = True
         RightResponseLetter_Label.Visible = True
@@ -542,30 +554,42 @@ Public Class LdtForm
             If ActiveTestMaterial.IsPractiseTestMaterial = False Then
                 'Shows the Block_ProgressBar
                 Block_ProgressBar.Visible = True
+            Else
+                'Hides the Block_ProgressBar
+                Block_ProgressBar.Visible = False
             End If
         End If
 
-        'Changing the layout only if the CurrentGuiMode is changed
-        If CurrentGuiMode <> GuiMode Then
-            Select Case GuiMode
-                Case GuiModes.Info
-                    'Resets the background color
-                    ResetBackgroundColor_UnSafe()
-                    Content_SplitContainer.Panel1Collapsed = True
-                    Content_SplitContainer.Panel2Collapsed = False
+        Select Case GuiMode
+            Case GuiModes.Info
+                'Resets the background color
+                ResetBackgroundColor_UnSafe()
 
-                    'Shows the cursor
-                    Cursor.Show()
+                Content_SplitContainer.Panel1Collapsed = True
+                Content_SplitContainer.Panel2Collapsed = False
 
-                Case GuiModes.Test
-                    Content_SplitContainer.Panel1Collapsed = False
-                    Content_SplitContainer.Panel2Collapsed = True
-            End Select
-            Content_SplitContainer.Invalidate()
+                If ActiveTestMaterial IsNot Nothing Then
+                    If ActiveTestMaterial.IsPractiseTestMaterial = True Then
+                        Info_SplitContainer.Panel1Collapsed = False
+                        Info_SplitContainer.Panel2Collapsed = False
+                    Else
+                        Info_SplitContainer.Panel1Collapsed = True
+                        Info_SplitContainer.Panel2Collapsed = False
+                    End If
+                End If
+
+                'Shows the cursor
+                Cursor.Show()
+
+            Case GuiModes.Test
+                Content_SplitContainer.Panel1Collapsed = False
+                Content_SplitContainer.Panel2Collapsed = True
+
+        End Select
+        Content_SplitContainer.Invalidate()
             Content_SplitContainer.Update()
-        End If
-
-        CurrentGuiMode = GuiMode
+            Info_SplitContainer.Invalidate()
+            Info_SplitContainer.Update()
 
     End Sub
 
@@ -579,7 +603,7 @@ Public Class LdtForm
 
         ActivateKeyDownHandler()
 
-        Instructions_Label.Text = "Press Space to start!"
+        Instructions_Label.Text = Utils.GetGuiString(Utils.GuiStrings.GuiStringKeys.StartBySpace)
 
         Info_RichTextBox.LoadFile(IO.Path.Combine(TestSpecification.GetBlockParentFolder(), "Info.rtf"))
 
@@ -595,7 +619,7 @@ Public Class LdtForm
 
         ActivateKeyDownHandler()
 
-        Instructions_Label.Text = "Press Space to start!"
+        Instructions_Label.Text = Utils.GetGuiString(Utils.GuiStrings.GuiStringKeys.StartBySpace)
 
     End Sub
 
@@ -627,7 +651,7 @@ Public Class LdtForm
                 PractiseScoreDialog.ShowDialog(Me)
 
                 If PractiseScoreDialog.DialogResult = DialogResult.OK Then
-                    'OK means skip to real sharp 
+                    'OK means skip to sharp test
                     RunSharpTest()
                 Else
                     'Anything else means redo practise test
@@ -650,7 +674,7 @@ Public Class LdtForm
             Block_ProgressBar.ShowProgressText = True
             Block_ProgressBar.PerformStep()
 
-            Instructions_Label.Text = "You have now completed the lexical desicion task! Well done!" & vbCrLf & vbCrLf & "You may now close the app!"
+            Instructions_Label.Text = Utils.GetGuiString(Utils.GuiStrings.GuiStringKeys.FinishedTest) & vbCrLf & vbCrLf & Utils.GetGuiString(Utils.GuiStrings.GuiStringKeys.CloseApp)
 
         End If
 
@@ -668,8 +692,7 @@ Public Class LdtForm
 
     Private Sub NewBlock_Unsafe()
 
-        'Instructions_Label.Text = "You have now completed " & ActiveTestMaterial.CompletedBlocks & " of " & TestSpecification.NumberOfBlocks & " blocks." & vbCrLf & vbCrLf & "When you're ready, press space to start the next block"
-        Instructions_Label.Text = "Press Space to start!"
+        Instructions_Label.Text = Utils.GetGuiString(Utils.GuiStrings.GuiStringKeys.StartBySpace)
 
         Block_ProgressBar.PerformStep()
 
@@ -703,8 +726,10 @@ Public Class LdtForm
         'And resets the TimedResponseStopWatch
         TimedResponseStopWatch.Reset()
 
-        'Sets the GUI mode to Test
-        SetGuiMode_ThreadSafe(GuiModes.Test)
+        If ActiveTestMaterial.PresentedItems = 0 Then
+            'Sets the GUI mode to Test, only at the first trial
+            SetGuiMode_ThreadSafe(GuiModes.Test)
+        End If
 
         'Hides the cursor
         Cursor.Hide()
@@ -1120,6 +1145,8 @@ Public Class LdtForm
 End Class
 
 Public Class TestSpecification
+
+    Public Property GuiLanguage As String = "EN"
 
     Public Property RandomSeed As Integer?
 

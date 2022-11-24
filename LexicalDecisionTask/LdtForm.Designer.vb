@@ -158,6 +158,7 @@ Partial Class LdtForm
         '
         Me.Instructions_Label.BackColor = System.Drawing.SystemColors.ControlLight
         Me.Instructions_Label.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.Instructions_Label.Font = New System.Drawing.Font("Microsoft Sans Serif", 10.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.Instructions_Label.Location = New System.Drawing.Point(0, 0)
         Me.Instructions_Label.Name = "Instructions_Label"
         Me.Instructions_Label.Size = New System.Drawing.Size(744, 26)
@@ -172,6 +173,7 @@ Partial Class LdtForm
         Me.Block_ProgressBar.Name = "Block_ProgressBar"
         Me.Block_ProgressBar.ShowProgressText = True
         Me.Block_ProgressBar.Size = New System.Drawing.Size(744, 24)
+        Me.Block_ProgressBar.Step = 1
         Me.Block_ProgressBar.TabIndex = 6
         Me.Block_ProgressBar.TextFont = New System.Drawing.Font("Microsoft Sans Serif", 10.0!, System.Drawing.FontStyle.Bold)
         Me.Block_ProgressBar.Value = 60

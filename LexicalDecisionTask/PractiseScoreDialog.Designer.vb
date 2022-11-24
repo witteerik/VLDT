@@ -27,7 +27,7 @@ Partial Class PractiseScoreDialog
         Me.REDO_Button = New System.Windows.Forms.Button()
         Me.SKIP_Button = New System.Windows.Forms.Button()
         Me.Info1_Label = New System.Windows.Forms.Label()
-        Me.Label1 = New System.Windows.Forms.Label()
+        Me.Info3_Label = New System.Windows.Forms.Label()
         Me.Score_Label = New System.Windows.Forms.Label()
         Me.TableLayoutPanel1.SuspendLayout()
         Me.SuspendLayout()
@@ -42,7 +42,7 @@ Partial Class PractiseScoreDialog
         Me.TableLayoutPanel1.Controls.Add(Me.REDO_Button, 1, 5)
         Me.TableLayoutPanel1.Controls.Add(Me.SKIP_Button, 2, 5)
         Me.TableLayoutPanel1.Controls.Add(Me.Info1_Label, 1, 1)
-        Me.TableLayoutPanel1.Controls.Add(Me.Label1, 1, 3)
+        Me.TableLayoutPanel1.Controls.Add(Me.Info3_Label, 1, 3)
         Me.TableLayoutPanel1.Controls.Add(Me.Score_Label, 1, 2)
         Me.TableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill
         Me.TableLayoutPanel1.Location = New System.Drawing.Point(0, 0)
@@ -92,17 +92,17 @@ Partial Class PractiseScoreDialog
         Me.Info1_Label.Text = "Your practise score of..."
         Me.Info1_Label.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
         '
-        'Label1
+        'Info3_Label
         '
-        Me.TableLayoutPanel1.SetColumnSpan(Me.Label1, 2)
-        Me.Label1.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.Label1.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label1.Location = New System.Drawing.Point(13, 134)
-        Me.Label1.Name = "Label1"
-        Me.Label1.Size = New System.Drawing.Size(408, 31)
-        Me.Label1.TabIndex = 3
-        Me.Label1.Text = "...is too low to start the real test!"
-        Me.Label1.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
+        Me.TableLayoutPanel1.SetColumnSpan(Me.Info3_Label, 2)
+        Me.Info3_Label.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.Info3_Label.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Info3_Label.Location = New System.Drawing.Point(13, 134)
+        Me.Info3_Label.Name = "Info3_Label"
+        Me.Info3_Label.Size = New System.Drawing.Size(408, 31)
+        Me.Info3_Label.TabIndex = 3
+        Me.Info3_Label.Text = "...is too low to start the real test!"
+        Me.Info3_Label.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
         '
         'Score_Label
         '
@@ -141,6 +141,6 @@ Partial Class PractiseScoreDialog
     Friend WithEvents REDO_Button As System.Windows.Forms.Button
     Friend WithEvents SKIP_Button As System.Windows.Forms.Button
     Friend WithEvents Info1_Label As Label
-    Friend WithEvents Label1 As Label
+    Friend WithEvents Info3_Label As Label
     Friend WithEvents Score_Label As Label
 End Class

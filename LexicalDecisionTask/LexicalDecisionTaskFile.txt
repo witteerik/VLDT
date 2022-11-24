@@ -1,6 +1,8 @@
 // This file contains settings for the Video-Based Lexical Decision Task software. 
 // Most settings below require a value. Where not required this is noted by a comment (Lines, and parts of lines, in this file can be commented out using double slashes (i.e. //)
 
+GuiLanguage = SV // Default GUI language is English (EN). More languages can be added by the user by modifying the file "GuiStrings.txt"
+
 RandomSeed = // Optional. Set to an integer value to accomplish repetition of the task randomization.
 
 ResponseKeys = J, F // Optional. The keyboard keys to use to note a correct and incorrect responses

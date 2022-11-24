@@ -36,6 +36,15 @@ Public Class ParticipantDialog
     Private Sub Participant_Nr_IntegerParsingTextBox_TextChanged(sender As Object, e As EventArgs)
 
     End Sub
+
+    Private Sub ParticipantDialog_Load(sender As Object, e As EventArgs) Handles MyBase.Load
+
+        Me.Text = Utils.GetGuiString(Utils.GuiStrings.GuiStringKeys.AppPtcTitle)
+        ParticipantID_Label.Text = Utils.GetGuiString(Utils.GuiStrings.GuiStringKeys.AppPtcID)
+        ParticipantNr_Label.Text = Utils.GetGuiString(Utils.GuiStrings.GuiStringKeys.AppPtcNr)
+        OK_Button.Text = Utils.GetGuiString(Utils.GuiStrings.GuiStringKeys.AppPtcOK)
+
+    End Sub
 End Class
 
 

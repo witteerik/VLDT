@@ -24,8 +24,8 @@ Partial Class ParticipantDialog
     Private Sub InitializeComponent()
         Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(ParticipantDialog))
         Me.OK_Button = New System.Windows.Forms.Button()
-        Me.Label1 = New System.Windows.Forms.Label()
-        Me.Label2 = New System.Windows.Forms.Label()
+        Me.ParticipantID_Label = New System.Windows.Forms.Label()
+        Me.ParticipantNr_Label = New System.Windows.Forms.Label()
         Me.Participant_ID_TextBox = New System.Windows.Forms.TextBox()
         Me.TableLayoutPanel1 = New System.Windows.Forms.TableLayoutPanel()
         Me.Participant_Nr_IntegerParsingTextBox = New LexicalDecisionTask.IntegerParsingTextBox()
@@ -44,27 +44,27 @@ Partial Class ParticipantDialog
         Me.OK_Button.TabIndex = 0
         Me.OK_Button.Text = "Continue"
         '
-        'Label1
+        'ParticipantID_Label
         '
-        Me.Label1.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.Label1.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label1.Location = New System.Drawing.Point(3, 20)
-        Me.Label1.Name = "Label1"
-        Me.Label1.Size = New System.Drawing.Size(167, 31)
-        Me.Label1.TabIndex = 1
-        Me.Label1.Text = "Participant ID:"
-        Me.Label1.TextAlign = System.Drawing.ContentAlignment.MiddleRight
+        Me.ParticipantID_Label.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.ParticipantID_Label.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.ParticipantID_Label.Location = New System.Drawing.Point(3, 20)
+        Me.ParticipantID_Label.Name = "ParticipantID_Label"
+        Me.ParticipantID_Label.Size = New System.Drawing.Size(167, 31)
+        Me.ParticipantID_Label.TabIndex = 1
+        Me.ParticipantID_Label.Text = "Participant ID:"
+        Me.ParticipantID_Label.TextAlign = System.Drawing.ContentAlignment.MiddleRight
         '
-        'Label2
+        'ParticipantNr_Label
         '
-        Me.Label2.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.Label2.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label2.Location = New System.Drawing.Point(3, 51)
-        Me.Label2.Name = "Label2"
-        Me.Label2.Size = New System.Drawing.Size(167, 31)
-        Me.Label2.TabIndex = 2
-        Me.Label2.Text = "Participant number:"
-        Me.Label2.TextAlign = System.Drawing.ContentAlignment.MiddleRight
+        Me.ParticipantNr_Label.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.ParticipantNr_Label.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.ParticipantNr_Label.Location = New System.Drawing.Point(3, 51)
+        Me.ParticipantNr_Label.Name = "ParticipantNr_Label"
+        Me.ParticipantNr_Label.Size = New System.Drawing.Size(167, 31)
+        Me.ParticipantNr_Label.TabIndex = 2
+        Me.ParticipantNr_Label.Text = "Participant number:"
+        Me.ParticipantNr_Label.TextAlign = System.Drawing.ContentAlignment.MiddleRight
         '
         'Participant_ID_TextBox
         '
@@ -81,9 +81,9 @@ Partial Class ParticipantDialog
         Me.TableLayoutPanel1.ColumnCount = 2
         Me.TableLayoutPanel1.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 173.0!))
         Me.TableLayoutPanel1.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100.0!))
-        Me.TableLayoutPanel1.Controls.Add(Me.Label1, 0, 1)
+        Me.TableLayoutPanel1.Controls.Add(Me.ParticipantID_Label, 0, 1)
         Me.TableLayoutPanel1.Controls.Add(Me.OK_Button, 0, 4)
-        Me.TableLayoutPanel1.Controls.Add(Me.Label2, 0, 2)
+        Me.TableLayoutPanel1.Controls.Add(Me.ParticipantNr_Label, 0, 2)
         Me.TableLayoutPanel1.Controls.Add(Me.Participant_ID_TextBox, 1, 1)
         Me.TableLayoutPanel1.Controls.Add(Me.Participant_Nr_IntegerParsingTextBox, 1, 2)
         Me.TableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill
@@ -130,9 +130,9 @@ Partial Class ParticipantDialog
 
     End Sub
     Friend WithEvents OK_Button As System.Windows.Forms.Button
-    Friend WithEvents Label1 As Label
+    Friend WithEvents ParticipantID_Label As Label
     Friend WithEvents TableLayoutPanel1 As TableLayoutPanel
-    Friend WithEvents Label2 As Label
+    Friend WithEvents ParticipantNr_Label As Label
     Friend WithEvents Participant_ID_TextBox As TextBox
     Friend WithEvents Participant_Nr_IntegerParsingTextBox As IntegerParsingTextBox
 End Class

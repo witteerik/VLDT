@@ -42,7 +42,7 @@ Imports System.ComponentModel
             End Set
         End Property
 
-    Public Property ShowText As Boolean = False
+    Public Property ShowText As Boolean = True
 
     'Below is an alternate way to hide the text on the control...
     '<DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)>
@@ -122,7 +122,7 @@ Imports System.ComponentModel
 
         Private Sub AudioButton_Validated(sender As Object, e As EventArgs) Handles Me.Validated
 
-            Me.Text = ""
+        If ShowText = False Then Me._Text = ""
 
-        End Sub
+    End Sub
     End Class

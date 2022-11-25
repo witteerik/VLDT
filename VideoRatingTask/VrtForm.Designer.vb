@@ -74,13 +74,14 @@ Partial Class VrtForm
         Me.TableLayoutPanel1.Controls.Add(Me.ShowPreviousItem_Button, 0, 1)
         Me.TableLayoutPanel1.Controls.Add(Me.ShowNextItem_Button, 0, 0)
         Me.TableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.TableLayoutPanel1.Location = New System.Drawing.Point(3, 33)
+        Me.TableLayoutPanel1.Location = New System.Drawing.Point(0, 30)
+        Me.TableLayoutPanel1.Margin = New System.Windows.Forms.Padding(0)
         Me.TableLayoutPanel1.Name = "TableLayoutPanel1"
         Me.TableLayoutPanel1.RowCount = 2
         Me.MainTableLayoutPanel.SetRowSpan(Me.TableLayoutPanel1, 2)
         Me.TableLayoutPanel1.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50.0!))
         Me.TableLayoutPanel1.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50.0!))
-        Me.TableLayoutPanel1.Size = New System.Drawing.Size(106, 577)
+        Me.TableLayoutPanel1.Size = New System.Drawing.Size(112, 583)
         Me.TableLayoutPanel1.TabIndex = 0
         '
         'Content_SplitContainer
@@ -151,10 +152,10 @@ Partial Class VrtForm
         Me.ShowPreviousItem_Button.Enabled = False
         Me.ShowPreviousItem_Button.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.ShowPreviousItem_Button.ForeColor = System.Drawing.Color.White
-        Me.ShowPreviousItem_Button.Location = New System.Drawing.Point(3, 291)
+        Me.ShowPreviousItem_Button.Location = New System.Drawing.Point(3, 294)
         Me.ShowPreviousItem_Button.Name = "ShowPreviousItem_Button"
         Me.ShowPreviousItem_Button.ShowText = True
-        Me.ShowPreviousItem_Button.Size = New System.Drawing.Size(100, 283)
+        Me.ShowPreviousItem_Button.Size = New System.Drawing.Size(106, 286)
         Me.ShowPreviousItem_Button.TabIndex = 2
         Me.ShowPreviousItem_Button.Text = "-1"
         Me.ShowPreviousItem_Button.UseVisualStyleBackColor = True
@@ -169,7 +170,7 @@ Partial Class VrtForm
         Me.ShowNextItem_Button.Location = New System.Drawing.Point(3, 3)
         Me.ShowNextItem_Button.Name = "ShowNextItem_Button"
         Me.ShowNextItem_Button.ShowText = True
-        Me.ShowNextItem_Button.Size = New System.Drawing.Size(100, 282)
+        Me.ShowNextItem_Button.Size = New System.Drawing.Size(106, 285)
         Me.ShowNextItem_Button.TabIndex = 1
         Me.ShowNextItem_Button.Text = "+1"
         Me.ShowNextItem_Button.UseVisualStyleBackColor = True

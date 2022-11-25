@@ -84,6 +84,9 @@ Public Class VrtForm
         Else
             Item_ProgressBar.Value = RatingStimulusSet.StimulusList.Count
             MsgBox("The rating task is now completed! You may now close the app!", MsgBoxStyle.Information, "Finished!")
+
+            SetDynamicNextPreviousButtonsEnabledState()
+
         End If
 
     End Sub
@@ -180,10 +183,18 @@ Public Class VrtForm
 
     Private Sub ResponseGiven() Handles RatingPanel.ResponseGiven
 
+        SetDynamicNextPreviousButtonsEnabledState()
+
+        ShowNextNonCompleteItem_Button.Enabled = True
+
+    End Sub
+
+    Private Sub SetDynamicNextPreviousButtonsEnabledState()
+
         If RatingStimulusSet.CurrentItemIndex <= 0 Then
-            ShowNextItem_Button.Enabled = False
+            ShowPreviousItem_Button.Enabled = False
         Else
-            ShowNextItem_Button.Enabled = True
+            ShowPreviousItem_Button.Enabled = True
         End If
 
         If RatingStimulusSet.CurrentItemIndex >= RatingStimulusSet.StimulusList.Count - 1 Then
@@ -191,12 +202,6 @@ Public Class VrtForm
         Else
             ShowNextItem_Button.Enabled = True
         End If
-
-        If CurrentTestStimulus.HasAllResponses = True Then
-            ShowNextNonCompleteItem_Button.Enabled = True
-        End If
-
-        ShowNextNonCompleteItem_Button.Enabled = True
 
     End Sub
 
@@ -215,6 +220,10 @@ Public Class VrtForm
     End Sub
 
     Private Sub ShowPreviousStimulus(sender As Object, e As EventArgs) Handles ShowNextItem_Button.Click, ShowPreviousItem_Button.Click
+
+    End Sub
+
+    Private Sub ShowNextStimulus(sender As Object, e As EventArgs) Handles ShowNextItem_Button.Click
 
     End Sub
 End Class

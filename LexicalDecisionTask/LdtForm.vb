@@ -567,7 +567,7 @@ Public Class LdtForm
             CurrentItem.PlayCommandTime = DateTime.Now
             VideoPlayer.Play(CurrentItem.CurrentVideo)
         Catch ex As Exception
-            MsgBox("An error has occured! Unable to play the current video. Please click ok to continue!", "Unable to play video!")
+            MsgBox("An error has occured! Unable to play the current video. Please click ok to continue!", MsgBoxStyle.Critical, "Unable to play video!")
             StopSystemTimers()
             'Stops all timers and restarts the trial"
             TrialInitiationTimer.Start()

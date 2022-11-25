@@ -1,7 +1,81 @@
 ﻿Imports LibVLCSharp.Shared
-Imports VLDT_lib
 
-Public Class TestStimulus
+Public Class RatingStimulusSet
+    Public Property StimulusList As New List(Of RatingStimulus)
+    Public Property CurrentItemIndex As Integer = 0
+
+    Public Function LoadTestStimuli(ByVal VideoFilesToLoad As String(), ByRef LibVLC As LibVLC, ByVal RandomizeOrder As Boolean, ByVal Randomizer As Random) As Boolean
+
+        'Creating new items with their file path assigned
+        For Each FilePath In VideoFilesToLoad
+            Try
+
+                Dim NewTestStimulus = New RatingStimulus With {.FilePath = FilePath, .FileName = IO.Path.GetFileNameWithoutExtension(FilePath)}
+                NewTestStimulus.SetMedia(LibVLC)
+                StimulusList.Add(NewTestStimulus)
+
+            Catch ex As Exception
+                MsgBox("Unable to load the following file as a media file (you should remove it from the folder): " & FilePath & vbCr & vbCr & "Unable to continue!", MsgBoxStyle.Exclamation, "Invalid media file detected!")
+                Return False
+            End Try
+        Next
+
+        If RandomizeOrder = True Then
+            Dim TempList As New List(Of RatingStimulus)
+            Do Until StimulusList.Count = 0
+                Dim RandomIndex As Integer = Randomizer.Next(0, StimulusList.Count)
+                TempList.Add(StimulusList(RandomIndex))
+                StimulusList.RemoveAt(RandomIndex)
+            Loop
+            StimulusList = TempList
+        End If
+
+        Return True
+
+    End Function
+
+    Public Function GetNextNonCompleteStimulus() As RatingStimulus
+
+        Dim SelectedStimulus As RatingStimulus = Nothing
+
+        For n = 0 To StimulusList.Count - 1
+            If StimulusList(n).HasAllResponses = False Then
+                CurrentItemIndex = n
+                SelectedStimulus = StimulusList(n)
+                Exit For
+            End If
+        Next
+
+        Return SelectedStimulus
+
+    End Function
+
+    Public Function GetPreviousStimulus() As RatingStimulus
+
+        If CurrentItemIndex > 0 Then
+            CurrentItemIndex -= 1
+            Return StimulusList(CurrentItemIndex)
+        Else
+            Return Nothing
+        End If
+
+    End Function
+
+    Public Function GetNextStimulus() As RatingStimulus
+
+        If CurrentItemIndex < StimulusList.Count - 2 Then
+            CurrentItemIndex += 1
+            Return StimulusList(CurrentItemIndex)
+        Else
+            Return Nothing
+        End If
+
+    End Function
+
+End Class
+
+
+Public Class RatingStimulus
 
     Public CurrentVideo As Media = Nothing
     Public Property FilePath As String = ""
@@ -47,55 +121,3 @@ Public Class TestStimulus
 
 End Class
 
-Public Class TestStimulusSet
-    Public Property StimulusList As New List(Of TestStimulus)
-
-    Public Property PresentedStimulusHistory As New List(Of TestStimulus)
-
-    Public Function LoadTestStimuli(ByVal VideoFilesToLoad As String(), ByRef LibVLC As LibVLC) As Boolean
-
-        'Creating new items with their file path assigned
-        For Each FilePath In VideoFilesToLoad
-            Try
-
-                Dim NewTestStimulus = New TestStimulus With {.FilePath = FilePath, .FileName = IO.Path.GetFileNameWithoutExtension(FilePath)}
-                NewTestStimulus.SetMedia(LibVLC)
-                StimulusList.Add(NewTestStimulus)
-
-            Catch ex As Exception
-                MsgBox("Unable to load the following file as a media file (you should remove it from the folder): " & FilePath & vbCr & vbCr & "Unable to continue!", MsgBoxStyle.Exclamation, "Invalid media file detected!")
-                Return False
-            End Try
-        Next
-
-        Return True
-
-    End Function
-
-    Public Function GetNextStimulus() As TestStimulus
-
-
-        Dim SelectedStimulus As TestStimulus = Nothing
-
-        For Each Stimulus In StimulusList
-            If Stimulus.HasAllResponses = False Then
-                SelectedStimulus = Stimulus
-                Exit For
-            End If
-        Next
-
-        Return SelectedStimulus
-
-    End Function
-
-    Public Function GetLastPresentedStimulus() As TestStimulus
-
-        If PresentedStimulusHistory.Count = 0 Then
-            Return Nothing
-        Else
-            Return PresentedStimulusHistory(PresentedStimulusHistory.Count - 1)
-        End If
-
-    End Function
-
-End Class

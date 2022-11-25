@@ -1,6 +1,5 @@
 ﻿Imports System.Windows.Forms
 Imports System.Drawing
-Imports System.ComponentModel
 Imports System.Runtime.Serialization.Formatters.Binary
 Imports System.IO
 
@@ -8,13 +7,13 @@ Imports System.IO
 Public Class RatingPanel
     Inherits TableLayoutPanel
 
-    Public CurrentTestStimulus As TestStimulus
+    Public CurrentRatingStimulus As RatingStimulus
 
     Public Event ResponseGiven()
 
-    Public Sub AddQuestions(ByRef CurrentTestStimulus As TestStimulus)
+    Public Sub AddQuestions(ByRef CurrentRatingStimulus As RatingStimulus)
 
-        Me.CurrentTestStimulus = CurrentTestStimulus
+        Me.CurrentRatingStimulus = CurrentRatingStimulus
 
         Dim RandomColorSource = New Random(1)
 
@@ -22,8 +21,8 @@ Public Class RatingPanel
         Me.Padding = New Padding(10)
 
         Me.RowStyles.Clear()
-        For Each Question In CurrentTestStimulus.Questions
-            Dim NewItemRatingPanel As New VLDT_lib.ItemRatingPanel(2, RandomColorSource)
+        For Each Question In CurrentRatingStimulus.Questions
+            Dim NewItemRatingPanel As New VLDT_lib.RatingQuestionPanel(2, RandomColorSource)
             AddHandler NewItemRatingPanel.ResponseGiven, AddressOf ResponseGivenHandler
             Me.Controls.Add(NewItemRatingPanel)
             NewItemRatingPanel.AddQuestion(Question)
@@ -45,7 +44,7 @@ Public Class RatingPanel
     Public Sub ResponseGivenHandler()
 
         'Checks if all items have responses
-        If CurrentTestStimulus.HasAllResponses = True Then RaiseEvent ResponseGiven()
+        If CurrentRatingStimulus.HasAllResponses = True Then RaiseEvent ResponseGiven()
 
     End Sub
 
@@ -102,13 +101,12 @@ Public Class RatingQuestion
 End Class
 
 <Serializable>
-Public Class ItemRatingPanel
+Public Class RatingQuestionPanel
     Inherits FlowLayoutPanel
 
-    Public WithEvents ItemResponseInterface As IItemResponse
+    Public WithEvents ItemResponseInterface As IRatingResponse
 
     Private FontIncrease As Single
-    Private RandomColorSource As Random
     Public Property SkipBackcolorRandomization As Boolean = False
 
     Private QuestionTextBox As Label
@@ -123,7 +121,6 @@ Public Class ItemRatingPanel
         Me.BorderStyle = Windows.Forms.BorderStyle.Fixed3D
         Me.FontIncrease = FontIncrease
         Me.AutoSize = False
-        Me.RandomColorSource = RandomColorSource
 
         'Setting a random background color on the control
         If SkipBackcolorRandomization = False Then
@@ -133,7 +130,6 @@ Public Class ItemRatingPanel
     End Sub
 
     Public Sub AddQuestion(ByRef Question As RatingQuestion)
-
 
         'Adding question text box
         QuestionTextBox = New Label
@@ -149,16 +145,15 @@ Public Class ItemRatingPanel
 
         Select Case Question.GetQuestionType
             Case RatingQuestion.QuestionTypes.Categorical
-                ItemResponseInterface = New ItemRatingCategories
+                ItemResponseInterface = New RatingCategoriesPanel
             Case RatingQuestion.QuestionTypes.Scale
-                ItemResponseInterface = New ItemRatingScale
+                ItemResponseInterface = New RatingScalePanel
         End Select
 
         Me.Controls.Add(ItemResponseInterface)
-        ItemResponseInterface.AddResponseValues(Question)
+        ItemResponseInterface.AddRatingQuestion(Question)
 
     End Sub
-
 
     Public Sub ResizeNow()
 
@@ -178,21 +173,16 @@ Public Class ItemRatingPanel
 
 End Class
 
-
-Public Interface IItemResponse
-    Sub AddResponseValues(ByRef Question As RatingQuestion)
-
+Public Interface IRatingResponse
+    Sub AddRatingQuestion(ByRef Question As RatingQuestion)
     Sub ResizeNow()
-
     Function GetHeight()
-
     Event ResponseGiven()
-
 End Interface
 
-Public Class ItemRatingCategories
+Public Class RatingCategoriesPanel
     Inherits TableLayoutPanel
-    Implements IItemResponse
+    Implements IRatingResponse
 
     Private FontIncrease As Single
     Private Question As RatingQuestion
@@ -206,9 +196,9 @@ Public Class ItemRatingCategories
         Me.BackColor = Color.Transparent
     End Sub
 
-    Public Event ResponseGiven() Implements IItemResponse.ResponseGiven
+    Public Event ResponseGiven() Implements IRatingResponse.ResponseGiven
 
-    Public Sub AddResponseValues(ByRef Question As RatingQuestion) Implements IItemResponse.AddResponseValues
+    Public Sub AddRatingQuestion(ByRef Question As RatingQuestion) Implements IRatingResponse.AddRatingQuestion
 
         Me.Question = Question
 
@@ -248,7 +238,7 @@ Public Class ItemRatingCategories
 
     End Sub
 
-    Public Sub ResizeNow() Implements IItemResponse.ResizeNow
+    Public Sub ResizeNow() Implements IRatingResponse.ResizeNow
 
         If Me.Question Is Nothing Then Exit Sub
 
@@ -265,7 +255,7 @@ Public Class ItemRatingCategories
 
     End Sub
 
-    Public Function GetHeight() Implements IItemResponse.GetHeight
+    Public Function GetHeight() Implements IRatingResponse.GetHeight
         Return Me.Height + Me.Padding.Vertical
     End Function
 
@@ -280,9 +270,9 @@ Public Class ItemRatingCategories
 
 End Class
 
-Public Class ItemRatingScale
+Public Class RatingScalePanel
     Inherits PictureBox
-    Implements IItemResponse
+    Implements IRatingResponse
 
     Private FontIncrease As Single
 
@@ -293,7 +283,7 @@ Public Class ItemRatingScale
 
     Private Question As RatingQuestion
 
-    Public Event ResponseGiven() Implements IItemResponse.ResponseGiven
+    Public Event ResponseGiven() Implements IRatingResponse.ResponseGiven
 
     Public Sub New()
         Me.New(2)
@@ -307,7 +297,7 @@ Public Class ItemRatingScale
         Me.MidcentreStringFormat.LineAlignment = StringAlignment.Center
     End Sub
 
-    Public Sub AddResponseValues(ByRef Question As RatingQuestion) Implements IItemResponse.AddResponseValues
+    Public Sub AddRatingQuestion(ByRef Question As RatingQuestion) Implements IRatingResponse.AddRatingQuestion
 
         Me.Question = Question
 
@@ -316,7 +306,7 @@ Public Class ItemRatingScale
 
     End Sub
 
-    Public Sub ResizeNow() Implements IItemResponse.ResizeNow
+    Public Sub ResizeNow() Implements IRatingResponse.ResizeNow
 
         If Me.Question Is Nothing Then Exit Sub
 
@@ -325,7 +315,7 @@ Public Class ItemRatingScale
 
     End Sub
 
-    Public Function GetHeight() Implements IItemResponse.GetHeight
+    Public Function GetHeight() Implements IRatingResponse.GetHeight
         Return Me.Height + Me.Padding.Vertical
     End Function
 
@@ -364,7 +354,6 @@ Public Class ItemRatingScale
         Public CurrentGuiScale As Double
         Public ScaledPoints As New List(Of Tuple(Of Integer, Point))
         Public ResponsePoint As Point = Point.Empty
-
     End Class
 
     Public Function GetCurrentScaleData() As ScaleData
@@ -403,30 +392,20 @@ Public Class ItemRatingScale
             Case MouseButtons.Left
 
                 Dim CurrentScaleData = GetCurrentScaleData()
-
-                Dim ClickedX = e.X
-
-                Dim TransformedToResponseScale = (ClickedX - CurrentScaleData.LeftEndPoint.X) / CurrentScaleData.CurrentGuiScale + Me.Min
+                Dim TransformedToResponseScale = (e.X - CurrentScaleData.LeftEndPoint.X) / CurrentScaleData.CurrentGuiScale + Me.Min
                 TransformedToResponseScale = Math.Min(TransformedToResponseScale, Me.Max)
                 TransformedToResponseScale = Math.Max(TransformedToResponseScale, Me.Min)
-
                 Question.ScaleResponse = TransformedToResponseScale
-
                 Me.Invalidate()
-
                 RaiseEvent ResponseGiven()
 
         End Select
-
     End Sub
-
-
 
 End Class
 
 Public Class RadioButtonWithResponseText
     Inherits RadioButton
-
     Public Property ResponseText As String
 
 End Class

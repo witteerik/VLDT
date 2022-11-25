@@ -7,9 +7,11 @@ Imports System.ComponentModel
     Public Class ChangeItemButton
         Inherits Button
 
-        Private _ViewMode As ViewModes = ViewModes.Next
+    Private MidcentreStringFormat As New StringFormat
 
-        Public Property ViewMode As ViewModes
+    Private _ViewMode As ViewModes = ViewModes.Next
+
+    Public Property ViewMode As ViewModes
             Get
                 Return _ViewMode
             End Get
@@ -26,29 +28,34 @@ Imports System.ComponentModel
 
         Private _Text As String = ""
 
-        ''' <summary>
-        ''' The Text property of the base class (Button) is overidden in this class, and always sets the text to an empty string, since no text should be displayed on the control.
-        ''' </summary>
-        ''' <returns></returns>
-        Public Overrides Property Text As String
+    ''' <summary>
+    ''' The Text property of the base class (Button) is overidden in this class, and always sets the text to an empty string if ShowText = False, since no text then should be displayed on the control.
+    ''' </summary>
+    ''' <returns></returns>
+    Public Overrides Property Text As String
             Get
                 Return _Text
             End Get
             Set(value As String)
-                value = ""
-                _Text = value
+            If ShowText = False Then value = ""
+            _Text = value
             End Set
         End Property
 
-        'Below is an alternate way to hide the text on the control...
-        '<DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)>
-        'Public Shadows Property Text As String = ""
+    Public Property ShowText As Boolean = False
 
-        Public Sub New()
+    'Below is an alternate way to hide the text on the control...
+    '<DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)>
+    'Public Shadows Property Text As String = ""
+
+    Public Sub New()
 
             MyBase.New
 
-        End Sub
+        Me.MidcentreStringFormat.Alignment = StringAlignment.Center
+        Me.MidcentreStringFormat.LineAlignment = StringAlignment.Center
+
+    End Sub
 
 
         Private Sub DrawSymbol(ByVal sender As Object, ByVal e As PaintEventArgs) Handles Me.Paint
@@ -58,8 +65,9 @@ Imports System.ComponentModel
             Dim PaintQuadrantSide As Single = Math.Min(MidX * 1.25, MidY * 1.25)
             Dim PaintQuadrantX As Single = MidX - (PaintQuadrantSide / 2)
             Dim PaintQuadrantY As Single = MidY - (PaintQuadrantSide / 2)
+        Dim MidXPush = ClientRectangle.Width / 10
 
-            Select Case ViewMode
+        Select Case ViewMode
                 Case ViewModes.Next
 
                     Dim PlayBrush As SolidBrush
@@ -80,6 +88,10 @@ Imports System.ComponentModel
                     e.Graphics.FillPolygon(PlayBrush, Points)
                     e.Graphics.DrawPolygon(PlayPen, Points)
 
+                If ShowText = True Then
+                    e.Graphics.DrawString(Me.Text, Me.Font, New SolidBrush(Me.ForeColor), New Point(MidX - MidXPush, MidY), MidcentreStringFormat)
+                End If
+
             Case ViewModes.Previous
 
                 Dim PlayBrush As SolidBrush
@@ -99,6 +111,10 @@ Imports System.ComponentModel
 
                 e.Graphics.FillPolygon(PlayBrush, Points)
                 e.Graphics.DrawPolygon(PlayPen, Points)
+
+                If ShowText = True Then
+                    e.Graphics.DrawString(Me.Text, Me.Font, New SolidBrush(Me.ForeColor), New Point(MidX + MidXPush, MidY), MidcentreStringFormat)
+                End If
 
         End Select
 

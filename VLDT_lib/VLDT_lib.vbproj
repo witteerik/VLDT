@@ -90,7 +90,7 @@
     <Compile Include="Controls\ChangeItemButton.vb">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Controls\ItemRatingPanel.vb">
+    <Compile Include="Controls\RatingPanel.vb">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="VLDT classes\Block.vb" />

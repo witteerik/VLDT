@@ -5,9 +5,12 @@ Public Class VrtForm
     Public MyLibVLC As LibVLC
 
     Public WithEvents VideoPlayer As MediaPlayer
-    Public Property TestStimulusSet As New TestStimulusSet
 
-    Private CurrentTestStimulus As TestStimulus
+    Private RatingStimulusSet As New RatingStimulusSet
+
+    Private Randomizer As New Random
+
+    Private CurrentTestStimulus As RatingStimulus
 
     Delegate Sub NoArgumentsDelegate()
 
@@ -40,7 +43,11 @@ Public Class VrtForm
 
         Dim VideoFiles = {"C:\VLDT\PilotExperiment1_Test\Block01\Pseudo\1001-P-16294.mp4", "C:\VLDT\PilotExperiment1_Test\Block01\Pseudo\1002-P-10864.mp4", "C:\VLDT\PilotExperiment1_Test\Block01\Pseudo\1005-P-2817.mp4"}
 
-        TestStimulusSet.LoadTestStimuli(VideoFiles, MyLibVLC)
+        RatingStimulusSet.LoadTestStimuli(VideoFiles, MyLibVLC, True, Randomizer)
+
+        Item_ProgressBar.Minimum = 0
+        Item_ProgressBar.Maximum = RatingStimulusSet.StimulusList.Count
+        Item_ProgressBar.Value = 0
 
         Dim QuestionSet As New List(Of RatingQuestion)
         QuestionSet.Add(New RatingQuestion With {.Question = "My question...", .CategoricalResponseAlternatives = New List(Of String) From {"1", "2", "3", "4", "5", "6", "7"}})
@@ -49,14 +56,14 @@ Public Class VrtForm
         QuestionSet.Add(New RatingQuestion With {.Question = "My fourth question... which is very very very very very very very very very very very very very very very very very very very very very very very very very very very very very very very very very very very very very very very very very very very very very very very very very very very very very very very very very very very very very very very very long...", .CategoricalResponseAlternatives = New List(Of String) From {"Yes", "No", "Maybe"}})
         QuestionSet.Add(New RatingQuestion With {.Question = "My fifth question...", .ScaleValues = New List(Of Integer) From {1, 2, 3, 4, 5}})
 
-        For Each Stimulus In TestStimulusSet.StimulusList
+        For Each Stimulus In RatingStimulusSet.StimulusList
             Stimulus.SetQuestions(QuestionSet)
         Next
 
 
     End Sub
 
-    Private Sub ChangeItemButton1_Click(sender As Object, e As EventArgs) Handles ShowNextItem_Button.Click
+    Private Sub ChangeItemButton1_Click(sender As Object, e As EventArgs) Handles ShowNextNonCompleteItem_Button.Click
         ShowNextNonCompleteStimulus()
     End Sub
 
@@ -65,46 +72,53 @@ Public Class VrtForm
     ''' </summary>
     Private Sub ShowNextNonCompleteStimulus()
 
-        If TestStimulusSet.StimulusList.Count = 0 Then
+        If RatingStimulusSet.StimulusList.Count = 0 Then
             MsgBox("No videos have been loaded!", MsgBoxStyle.Information, "Nothing to show!")
             Exit Sub
         End If
 
-        Dim LastStimulusTemporaryReference = CurrentTestStimulus
-        CurrentTestStimulus = TestStimulusSet.GetNextStimulus
+        CurrentTestStimulus = RatingStimulusSet.GetNextNonCompleteStimulus
 
         If CurrentTestStimulus IsNot Nothing Then
-
-            TestStimulusSet.PresentedStimulusHistory.Add(LastStimulusTemporaryReference)
-
             ShowNewStimulus()
         Else
+            Item_ProgressBar.Value = RatingStimulusSet.StimulusList.Count
             MsgBox("The rating task is now completed! You may now close the app!", MsgBoxStyle.Information, "Finished!")
-            'Also resets the current stimulus, if the user wants to watch it again
-            CurrentTestStimulus = LastStimulusTemporaryReference
         End If
-
-        If TestStimulusSet.PresentedStimulusHistory.Count > 0 Then ShowLastItem_Button.Enabled = True
 
     End Sub
 
-    ''' <summary>
-    ''' Backs to the last presented stimulus
-    ''' </summary>
-    Private Sub ShowPreviousStimulus() Handles ShowLastItem_Button.Click
+    Private Sub ShowPreviousStimulus() Handles ShowPreviousItem_Button.Click
 
-        CurrentTestStimulus = TestStimulusSet.GetLastPresentedStimulus
+        CurrentTestStimulus = RatingStimulusSet.GetPreviousStimulus
 
         If CurrentTestStimulus IsNot Nothing Then
             ShowNewStimulus()
         Else
-            ShowLastItem_Button.Enabled = True
+            ShowNextItem_Button.Enabled = True
             MsgBox("You're back at the first presented video!", MsgBoxStyle.Information, "You reached the first video!")
         End If
 
     End Sub
 
+    Private Sub ShowNextStimulus() Handles ShowNextItem_Button.Click
+
+        CurrentTestStimulus = RatingStimulusSet.GetNextStimulus
+
+        If CurrentTestStimulus IsNot Nothing Then
+            ShowNewStimulus()
+        Else
+            ShowNextItem_Button.Enabled = True
+            MsgBox("You've reached the last back at the first presented video!", MsgBoxStyle.Information, "You reached the first video!")
+        End If
+
+    End Sub
+
     Private Sub ShowNewStimulus()
+
+        ShowNextNonCompleteItem_Button.Enabled = False
+        ShowNextItem_Button.Enabled = False
+        ShowNextItem_Button.Enabled = False
 
         RatingPanel.Controls.Clear()
 
@@ -112,6 +126,8 @@ Public Class VrtForm
         Try
             MainTableLayoutPanel.Enabled = False
             VideoPlayer.Play(CurrentTestStimulus.CurrentVideo)
+
+            Item_ProgressBar.Value = RatingStimulusSet.CurrentItemIndex + 1
 
         Catch ex As Exception
             MsgBox("An error has occured! Unable to play the current video. Please click ok to continue!", MsgBoxStyle.Critical, "Unable to play video!")
@@ -157,7 +173,6 @@ Public Class VrtForm
             Exit Sub
         End If
 
-        ShowNextItem_Button.Enabled = False
         RatingPanel.AddQuestions(CurrentTestStimulus)
 
     End Sub
@@ -165,7 +180,23 @@ Public Class VrtForm
 
     Private Sub ResponseGiven() Handles RatingPanel.ResponseGiven
 
-        ShowNextItem_Button.Enabled = True
+        If RatingStimulusSet.CurrentItemIndex <= 0 Then
+            ShowNextItem_Button.Enabled = False
+        Else
+            ShowNextItem_Button.Enabled = True
+        End If
+
+        If RatingStimulusSet.CurrentItemIndex >= RatingStimulusSet.StimulusList.Count - 1 Then
+            ShowNextItem_Button.Enabled = False
+        Else
+            ShowNextItem_Button.Enabled = True
+        End If
+
+        If CurrentTestStimulus.HasAllResponses = True Then
+            ShowNextNonCompleteItem_Button.Enabled = True
+        End If
+
+        ShowNextNonCompleteItem_Button.Enabled = True
 
     End Sub
 
@@ -183,6 +214,9 @@ Public Class VrtForm
 
     End Sub
 
+    Private Sub ShowPreviousStimulus(sender As Object, e As EventArgs) Handles ShowNextItem_Button.Click, ShowPreviousItem_Button.Click
+
+    End Sub
 End Class
 
 

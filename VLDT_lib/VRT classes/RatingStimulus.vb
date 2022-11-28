@@ -203,7 +203,7 @@ Public Class RatingStimulusSet
         End If
 
         If NumberOfVideos <> FullVideoPaths.Count Then
-            MsgBox("The number of video files specied by the variable NumberOfVideos (" & NumberOfQuestions & ") in the file " & SetupFilePath & " do not agree with the actual number of infered video paths (" & FullVideoPaths.Count & ") from the data under the <VideoFolders> and <VideoFilepaths> tags and in the same file.", MsgBoxStyle.Exclamation, "Invalid variable value!")
+            MsgBox("The number of video files specied by the variable NumberOfVideos (" & NumberOfVideos & ") in the file " & SetupFilePath & " do not agree with the actual number of infered video paths (" & FullVideoPaths.Count & ") from the data under the <VideoFolders> and <VideoFilepaths> tags and in the same file.", MsgBoxStyle.Exclamation, "Invalid variable value!")
             Return Nothing
         End If
 

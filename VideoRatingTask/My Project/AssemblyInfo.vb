@@ -8,10 +8,10 @@ Imports System.Runtime.InteropServices
 
 ' Review the values of the assembly attributes
 
-<Assembly: AssemblyTitle("Video-Based Rating Task")>
+<Assembly: AssemblyTitle("Video-Based Rating Task (VRT)")>
 <Assembly: AssemblyDescription("")>
 <Assembly: AssemblyCompany("")>
-<Assembly: AssemblyProduct("VideoRatingTask")>
+<Assembly: AssemblyProduct("Video-Based Rating Task (VRT)")>
 <Assembly: AssemblyCopyright("Copyright © 2022 Erik Witte")>
 <Assembly: AssemblyTrademark("")>
 

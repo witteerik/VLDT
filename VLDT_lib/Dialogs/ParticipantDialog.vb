@@ -13,6 +13,12 @@ Public Class ParticipantDialog
 
     Private Sub Participant_ID_TextBox_TextChanged(sender As Object, e As EventArgs) Handles Participant_ID_TextBox.TextChanged
 
+        If Participant_ID_TextBox.Text.Contains(" ") Then
+            Participant_ID_TextBox.ForeColor = Drawing.Color.Red
+        Else
+            Participant_ID_TextBox.ForeColor = Drawing.Color.Black
+        End If
+
         ParticipantID = Participant_ID_TextBox.Text
 
         UpdateOKButton()
@@ -23,7 +29,7 @@ Public Class ParticipantDialog
 
         ParticipantNumber = Participant_Nr_IntegerParsingTextBox.Value
 
-        If ParticipantID <> "" And ParticipantNumber.HasValue = True Then
+        If ParticipantID <> "" And (Not Participant_ID_TextBox.Text.Contains(" ")) And ParticipantNumber.HasValue = True Then
             OK_Button.Enabled = True
         Else
             OK_Button.Enabled = False
@@ -31,16 +37,24 @@ Public Class ParticipantDialog
 
     End Sub
 
-    Private Sub Participant_Nr_IntegerParsingTextBox_TextChanged(sender As Object, e As EventArgs)
-
-    End Sub
-
     Private Sub ParticipantDialog_Load(sender As Object, e As EventArgs) Handles MyBase.Load
 
-        Me.Text = Utils.GetGuiString(Utils.GuiStrings.VldtGuiStringKeys.AppPtcTitle)
-        ParticipantID_Label.Text = Utils.GetGuiString(Utils.GuiStrings.VldtGuiStringKeys.AppPtcID)
-        ParticipantNr_Label.Text = Utils.GetGuiString(Utils.GuiStrings.VldtGuiStringKeys.AppPtcNr)
-        OK_Button.Text = Utils.GetGuiString(Utils.GuiStrings.VldtGuiStringKeys.AppPtcOK)
+        Select Case Utils.CurrentGuiStringType
+            Case GetType(Utils.GuiStrings.VldtGuiStringKeys)
+                Me.Text = Utils.GetGuiString(Utils.GuiStrings.VldtGuiStringKeys.AppPtcTitle)
+                ParticipantID_Label.Text = Utils.GetGuiString(Utils.GuiStrings.VldtGuiStringKeys.AppPtcID)
+                ParticipantNr_Label.Text = Utils.GetGuiString(Utils.GuiStrings.VldtGuiStringKeys.AppPtcNr)
+                OK_Button.Text = Utils.GetGuiString(Utils.GuiStrings.VldtGuiStringKeys.AppPtcOK)
+
+            Case GetType(Utils.GuiStrings.VrtGuiStringKeys)
+                Me.Text = Utils.GetGuiString(Utils.GuiStrings.VrtGuiStringKeys.AppPtcTitle)
+                ParticipantID_Label.Text = Utils.GetGuiString(Utils.GuiStrings.VrtGuiStringKeys.AppPtcID)
+                ParticipantNr_Label.Text = Utils.GetGuiString(Utils.GuiStrings.VrtGuiStringKeys.AppPtcNr)
+                OK_Button.Text = Utils.GetGuiString(Utils.GuiStrings.VrtGuiStringKeys.AppPtcOK)
+
+        End Select
+
+
 
     End Sub
 End Class

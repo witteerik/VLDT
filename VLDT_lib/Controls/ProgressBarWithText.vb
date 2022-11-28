@@ -18,6 +18,7 @@ Public Class ProgressBarWithText
 
 
     Private BlackBrush As Brush = Brushes.Black
+    Private GrayBrush As Brush = Brushes.LightGray
 
     Private MyStringFormat As StringFormat
 
@@ -49,7 +50,11 @@ Public Class ProgressBarWithText
 
         If ShowProgressText = True Then
             If Me.Value <= Me.Maximum And Me.Value >= Me.Minimum Then
-                e.Graphics.DrawString(Me.Value & " / " & Me.Maximum, TextFont, BlackBrush, Me.ClientRectangle, MyStringFormat)
+                If Me.Enabled = True Then
+                    e.Graphics.DrawString(Me.Value & " / " & Me.Maximum, TextFont, BlackBrush, Me.ClientRectangle, MyStringFormat)
+                Else
+                    e.Graphics.DrawString(Me.Value & " / " & Me.Maximum, TextFont, GrayBrush, Me.ClientRectangle, MyStringFormat)
+                End If
             End If
         End If
 

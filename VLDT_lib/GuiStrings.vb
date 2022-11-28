@@ -5,7 +5,7 @@ Namespace Utils
 
         Private LanguageStrings As New SortedList(Of Integer, String) 'GuiStringKey, GuiString
 
-        Private CurrentGuiStringType As Type
+        Public CurrentGuiStringType As Type
 
         Public Enum VldtGuiStringKeys
             None
@@ -24,9 +24,37 @@ Namespace Utils
             PractiseSKIP
         End Enum
 
+        Public Enum VrtGuiStringKeys
+            None
+            SelectFolder
+            FinishedTest
+            ChangeView
+            Replay
+            [Next]
+            FirstVideo
+            LastVideo
+            SavedToFile
+            CloseApp
+            CloseApp2
+            AppPtcTitle
+            AppPtcID
+            AppPtcNr
+            AppPtcOK
+        End Enum
+
         Public Function GetGuiString(ByVal GuiStringKey As VldtGuiStringKeys) As String
 
             If CurrentGuiStringType <> GetType(VldtGuiStringKeys) Then
+                Throw New Exception("Incorrect GuiStringKeyType specified in GetGuiString.")
+            End If
+
+            Return LanguageStrings(GuiStringKey)
+
+        End Function
+
+        Public Function GetGuiString(ByVal GuiStringKey As VrtGuiStringKeys) As String
+
+            If CurrentGuiStringType <> GetType(VrtGuiStringKeys) Then
                 Throw New Exception("Incorrect GuiStringKeyType specified in GetGuiString.")
             End If
 
@@ -77,7 +105,7 @@ Namespace Utils
 
                                 'Putting back any bits of the value that were removed when splitting by colons above
                                 For n = 2 To Key_ValueSplit.Length - 1
-                                    LanguageString = LanguageString & ":"
+                                    LanguageString = LanguageString & ":" & Key_ValueSplit(n).Trim
                                 Next
 
                                 'Checks if the value is already assigned
@@ -123,6 +151,7 @@ Namespace Utils
             Return True
 
         End Function
+
 
     End Module
 

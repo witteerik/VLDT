@@ -40,8 +40,8 @@ Public Class LdtForm
 
     Private OriginalBackColor As Color
 
-    Private WithEvents InitiateAppTimer As New Windows.Forms.Timer With {.Interval = 10} ' This timer is only oned once, in order to start the application on a short delay. The timer is a Windows forms timer and live on the main UI thread.
-    Private WithEvents ShutDownTimer As New Windows.Forms.Timer With {.Interval = 30} ' This timer is only oned once, in order to start the application on a short delay and then directly shutting it down. The timer is a Windows forms timer and live on the main UI thread.
+    Private WithEvents InitiateAppTimer As New Windows.Forms.Timer With {.Interval = 50} ' This timer is only oned once, in order to start the application on a short delay. The timer is a Windows forms timer and live on the main UI thread.
+    Private WithEvents ShutDownTimer As New Windows.Forms.Timer With {.Interval = 100} ' This timer is only oned once, in order to start the application on a short delay and then directly shutting it down. The timer is a Windows forms timer and live on the main UI thread.
 
     Private WithEvents TrialInitiationTimer As New System.Timers.Timer With {.Interval = 10, .AutoReset = False}
     Private WithEvents StartTrialTimer As New System.Timers.Timer With {.AutoReset = False}
@@ -119,10 +119,8 @@ Public Class LdtForm
         Background_TableLayoutPanel.BackColor = Color.Black
         OriginalBackColor = Background_TableLayoutPanel.BackColor
 
-        MsgBox("Please click OK and then locate the lexical decision test file (.txt)!", MsgBoxStyle.Information, "Locate test file")
-
         Dim fd As New OpenFileDialog
-        fd.Title = "Please select the lexical decision test file (.txt) and then click OK, or cancel to close the app!"
+        fd.Title = "Please select the lexical decision task file (.txt) and then click OK, or cancel to close the app!"
         fd.InitialDirectory = My.Computer.FileSystem.SpecialDirectories.MyDocuments
         fd.CheckFileExists = True
         fd.Multiselect = False
@@ -135,7 +133,7 @@ Public Class LdtForm
             CurrentTestSpecification = TestSpecification.LoadTestSpecificationFile(SelectedFilePath)
 
             If CurrentTestSpecification Is Nothing Then
-                MsgBox("Unable to load the lexical decision test file from: " & SelectedFilePath & vbCrLf & vbCrLf & "Unable to continue!", MsgBoxStyle.Exclamation, "Error loading file!")
+                MsgBox("Unable to load the lexical decision task file from: " & SelectedFilePath & vbCrLf & vbCrLf & "Unable to continue!", MsgBoxStyle.Exclamation, "Error loading file!")
                 ShutDownTimer.Start()
                 Exit Sub
             End If
@@ -157,7 +155,7 @@ Public Class LdtForm
 
             'Trying to save a log message to the output folder (just to check that it works)
             Try
-                Utils.SendInfoToLog("Initiated lexical decision test. Test results wil be saved in the folder: " & OutputFolder,, OutputFolder)
+                Utils.SendInfoToLog("Initiated lexical decision test. Test results will be saved in the folder: " & OutputFolder,, OutputFolder)
 
                 'String the output folder
                 TestResultExportFolder = OutputFolder
@@ -173,13 +171,6 @@ Public Class LdtForm
             Exit Sub
         End If
 
-        'Setting up the Form randomizer 
-        If CurrentTestSpecification.RandomSeed.HasValue = True Then
-            Randomizer = New Random(CurrentTestSpecification.RandomSeed)
-        Else
-            Randomizer = New Random
-        End If
-
         ' Getting the participant ID (and number, if response keys and the order of blocks and should be counter balanced)
         Dim ParticipantDialog As New ParticipantDialog
         ParticipantDialog.ShowDialog()
@@ -192,6 +183,14 @@ Public Class LdtForm
             Exit Sub
         End If
 
+        'Setting up the Form randomizer 
+        If CurrentTestSpecification.RandomSeed.HasValue = True Then
+            Dim InterParticipantRandomizer As New Random(ParticipantDialog.ParticipantNumber)
+            Dim AddedTerm = InterParticipantRandomizer.Next(1000000)
+            Randomizer = New Random(CurrentTestSpecification.RandomSeed + AddedTerm)
+        Else
+            Randomizer = New Random
+        End If
 
         'Selecting response keys
         If CurrentTestSpecification.RandomizeResponseKeys = True Then
@@ -207,7 +206,7 @@ Public Class LdtForm
             End If
 
         Else
-            'Using keys in the specified order: Real, Pseudo, as given in the test file
+            'Using keys in the specified order: Real, Pseudo, as given in the task file
             If ParticipantNumber Mod 2 = 0 Then
                 RealKey = CurrentTestSpecification.AvailableResponseKeys(0)
                 PseudoKey = CurrentTestSpecification.AvailableResponseKeys(1)
@@ -490,16 +489,16 @@ Public Class LdtForm
         'Exporting last trial if ExportAfterEveryTrial is True
         If CurrentTestSpecification.ExportAfterEveryTrial = True Then
             If CurrentItem IsNot Nothing Then
-                Dim TrialExportFileName As String = ActiveTestMaterial.CreateExportFileName(ParticipantID, New SortedSet(Of Integer) From {ActiveTestMaterial.GetCurrentBlockNumber})
+                Dim TrialExportFileName As String = ActiveTestMaterial.CreateExportFileName(ParticipantID, ParticipantNumber, New SortedSet(Of Integer) From {ActiveTestMaterial.GetCurrentBlockNumber})
 
                 'Exporting headings
                 If TrialExportIncludeHeadings = True Then
-                    Utils.SendInfoToLog(TestItem.GetExportHeadings(), TrialExportFileName, IO.Path.Combine(TestResultExportFolder, ParticipantID & "_TestTrialExport"), True, True)
+                    Utils.SendInfoToLog(TestItem.GetExportHeadings(), TrialExportFileName, IO.Path.Combine(TestResultExportFolder, ParticipantID & "_" & ParticipantNumber.ToString("000") & "_TestTrialExport"), True, True)
                     TrialExportIncludeHeadings = False
                 End If
 
                 'Exporting data
-                Utils.SendInfoToLog(CurrentItem.ToString(False), TrialExportFileName, IO.Path.Combine(TestResultExportFolder, ParticipantID & "_TestTrialExport"), True, True)
+                Utils.SendInfoToLog(CurrentItem.ToString(False), TrialExportFileName, IO.Path.Combine(TestResultExportFolder, ParticipantID & "_" & ParticipantNumber.ToString("000") & "_TestTrialExport"), True, True)
             End If
         End If
 
@@ -511,12 +510,12 @@ Public Class LdtForm
 
             'Saving the block results
             If ActiveTestMaterial.GetCurrentBlockNumber IsNot Nothing Then
-                ActiveTestMaterial.ExportResults(TestResultExportFolder, ParticipantID, New SortedSet(Of Integer) From {ActiveTestMaterial.GetCurrentBlockNumber})
+                ActiveTestMaterial.ExportResults(TestResultExportFolder, ParticipantID, ParticipantNumber, New SortedSet(Of Integer) From {ActiveTestMaterial.GetCurrentBlockNumber})
             End If
 
             'Saving all test results (if at the last block), but only if it's not a practise test
             If ActiveTestMaterial.IsPractiseTestMaterial = False Then
-                If NextEvent.NextEventType = TestMaterial.NextEventTypes.EndOfTest Then ActiveTestMaterial.ExportResults(TestResultExportFolder, ParticipantID)
+                If NextEvent.NextEventType = TestMaterial.NextEventTypes.EndOfTest Then ActiveTestMaterial.ExportResults(TestResultExportFolder, ParticipantID, ParticipantNumber)
             End If
 
             'Sets CurrentItem to Nothing, and resets TrialExportUncludeHeadings 

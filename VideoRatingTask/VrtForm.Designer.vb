@@ -22,6 +22,7 @@ Partial Class VrtForm
     'Do not modify it using the code editor.
     <System.Diagnostics.DebuggerStepThrough()>
     Private Sub InitializeComponent()
+        Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(VrtForm))
         Me.MainTableLayoutPanel = New System.Windows.Forms.TableLayoutPanel()
         Me.TableLayoutPanel1 = New System.Windows.Forms.TableLayoutPanel()
         Me.Content_SplitContainer = New System.Windows.Forms.SplitContainer()
@@ -57,6 +58,7 @@ Partial Class VrtForm
         Me.MainTableLayoutPanel.Controls.Add(Me.Replay_Button, 0, 0)
         Me.MainTableLayoutPanel.Controls.Add(Me.ChangeView_Button, 2, 0)
         Me.MainTableLayoutPanel.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.MainTableLayoutPanel.Enabled = False
         Me.MainTableLayoutPanel.Location = New System.Drawing.Point(0, 0)
         Me.MainTableLayoutPanel.Name = "MainTableLayoutPanel"
         Me.MainTableLayoutPanel.RowCount = 3
@@ -89,7 +91,6 @@ Partial Class VrtForm
         Me.Content_SplitContainer.Dock = System.Windows.Forms.DockStyle.Fill
         Me.Content_SplitContainer.Location = New System.Drawing.Point(115, 3)
         Me.Content_SplitContainer.Name = "Content_SplitContainer"
-        Me.Content_SplitContainer.Orientation = System.Windows.Forms.Orientation.Horizontal
         '
         'Content_SplitContainer.Panel1
         '
@@ -100,7 +101,7 @@ Partial Class VrtForm
         Me.Content_SplitContainer.Panel2.Controls.Add(Me.RatingPanel)
         Me.MainTableLayoutPanel.SetRowSpan(Me.Content_SplitContainer, 2)
         Me.Content_SplitContainer.Size = New System.Drawing.Size(890, 577)
-        Me.Content_SplitContainer.SplitterDistance = 355
+        Me.Content_SplitContainer.SplitterDistance = 520
         Me.Content_SplitContainer.TabIndex = 0
         '
         'VideoViewHolder_Panel
@@ -110,7 +111,7 @@ Partial Class VrtForm
         Me.VideoViewHolder_Panel.Dock = System.Windows.Forms.DockStyle.Fill
         Me.VideoViewHolder_Panel.Location = New System.Drawing.Point(0, 0)
         Me.VideoViewHolder_Panel.Name = "VideoViewHolder_Panel"
-        Me.VideoViewHolder_Panel.Size = New System.Drawing.Size(890, 355)
+        Me.VideoViewHolder_Panel.Size = New System.Drawing.Size(520, 577)
         Me.VideoViewHolder_Panel.TabIndex = 8
         '
         'VideoView
@@ -121,7 +122,7 @@ Partial Class VrtForm
         Me.VideoView.Margin = New System.Windows.Forms.Padding(0)
         Me.VideoView.MediaPlayer = Nothing
         Me.VideoView.Name = "VideoView"
-        Me.VideoView.Size = New System.Drawing.Size(890, 355)
+        Me.VideoView.Size = New System.Drawing.Size(520, 577)
         Me.VideoView.TabIndex = 6
         Me.VideoView.Text = "VideoView1"
         '
@@ -179,7 +180,7 @@ Partial Class VrtForm
         'ShowNextNonCompleteItem_Button
         '
         Me.ShowNextNonCompleteItem_Button.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.ShowNextNonCompleteItem_Button.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.ShowNextNonCompleteItem_Button.Font = New System.Drawing.Font("Microsoft Sans Serif", 11.5!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.ShowNextNonCompleteItem_Button.ForeColor = System.Drawing.Color.White
         Me.ShowNextNonCompleteItem_Button.Location = New System.Drawing.Point(1011, 33)
         Me.ShowNextNonCompleteItem_Button.Name = "ShowNextNonCompleteItem_Button"
@@ -212,7 +213,7 @@ Partial Class VrtForm
         Me.RatingPanel.Name = "RatingPanel"
         Me.RatingPanel.RowCount = 1
         Me.RatingPanel.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50.0!))
-        Me.RatingPanel.Size = New System.Drawing.Size(890, 218)
+        Me.RatingPanel.Size = New System.Drawing.Size(366, 577)
         Me.RatingPanel.TabIndex = 0
         '
         'VrtForm
@@ -221,6 +222,7 @@ Partial Class VrtForm
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.ClientSize = New System.Drawing.Size(1121, 613)
         Me.Controls.Add(Me.MainTableLayoutPanel)
+        Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
         Me.Name = "VrtForm"
         Me.Text = "Video-Based Rating Task"
         Me.MainTableLayoutPanel.ResumeLayout(False)

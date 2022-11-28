@@ -34,5 +34,10 @@ Namespace My
         Protected Overrides Sub OnCreateMainForm()
             Me.MainForm = Global.VideoRatingTask.VrtForm
         End Sub
+        
+        <Global.System.Diagnostics.DebuggerStepThroughAttribute()>  _
+        Protected Overrides Sub OnCreateSplashScreen()
+            Me.SplashScreen = Global.VideoRatingTask.VRT_SplashScreen
+        End Sub
     End Class
 End Namespace

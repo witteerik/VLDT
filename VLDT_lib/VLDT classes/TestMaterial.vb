@@ -40,7 +40,6 @@
                 'Setting the block order to use
                 BlockOrder = TestSpecification.ManualBlockOrders(UnwrappedParticipantIndex)
 
-
             End If
 
         End If
@@ -143,10 +142,10 @@
     ''' <param name="OutputFolder"></param>
     ''' <param name="ParticipantID"></param>
     ''' <param name="SelectedBlocks">If set, should contain the block number of the blocks to export.</param>
-    Public Sub ExportResults(ByVal OutputFolder As String, ByVal ParticipantID As String, Optional ByVal SelectedBlocks As SortedSet(Of Integer) = Nothing)
+    Public Sub ExportResults(ByVal OutputFolder As String, ByVal ParticipantID As String, ByVal ParticipantNumber As Integer, Optional ByVal SelectedBlocks As SortedSet(Of Integer) = Nothing)
 
         'Creating a filename
-        Dim FileName As String = CreateExportFileName(ParticipantID, SelectedBlocks)
+        Dim FileName As String = CreateExportFileName(ParticipantID, ParticipantNumber, SelectedBlocks)
 
         Dim ExportList As New List(Of String)
 
@@ -176,19 +175,20 @@
 
     End Sub
 
-    Public Function CreateExportFileName(ByVal ParticipantID As String, Optional ByVal SelectedBlocks As SortedSet(Of Integer) = Nothing) As String
+    Public Function CreateExportFileName(ByVal ParticipantID As String, ByVal ParticipantNumber As Integer, Optional ByVal SelectedBlocks As SortedSet(Of Integer) = Nothing) As String
 
         Dim FileName As String
+        Dim ParticipantString As String = ParticipantID & "_" & ParticipantNumber.ToString("000")
         If IsPractiseTestMaterial = True Then
-            FileName = ParticipantID & "_PractiseTest"
+            FileName = "VLDT_" & ParticipantString & "_PractiseTest"
         Else
             If SelectedBlocks Is Nothing Then
-                FileName = ParticipantID & "_AllBlocks"
+                FileName = "VLDT_" & ParticipantString & "_AllBlocks"
             Else
                 If SelectedBlocks.Count = 1 Then
-                    FileName = ParticipantID & "_Block_" & String.Join("_", SelectedBlocks)
+                    FileName = "VLDT_" & ParticipantString & "_Block_" & String.Join("_", SelectedBlocks)
                 Else
-                    FileName = ParticipantID & "_Blocks_" & String.Join("_", SelectedBlocks)
+                    FileName = "VLDT_" & ParticipantString & "_Blocks_" & String.Join("_", SelectedBlocks)
                 End If
             End If
         End If

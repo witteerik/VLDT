@@ -1,0 +1,63 @@
+// In this file, strings presented in the graphical user interface (GUI) of the VRT software are specified, and can also be easily modified.
+// New languages can also be added.
+
+// Texts in the folder browser dialog
+<SelectFolder>
+EN: Please select a folder in which to store the rating results, and then click OK!
+SV: Välj en mapp där deltagarens svar ska sparas, och klicka sedan OK!
+
+// N.B. In order to add a new language, just add another line above this line. The new line should start with the language code followed by a colon, and then the translation. To use it, modify the GuiLanguage parameter in the file VideoRatingTaskFile.txt to specify your new language code.
+
+// Texts in the main window
+<FinishedTest>
+EN: You have now completed this task! Well done!
+SV: Du har nu gjort klart uppgiften! Bra jobbat!
+
+<ChangeView>
+EN: Change view
+SV: Visningsläge
+
+<Replay>
+EN: Replay
+SV: Spela igen
+
+<Next>
+EN: Next
+SV: Nästa
+
+<FirstVideo>
+EN: You're back at the first presented video!
+SV: Du visar redan den första videon!
+
+<LastVideo>
+EN: You've reached the last video!
+SV: Du visar redan den sista videon!
+
+<SavedToFile>
+EN: Successfully saved results to the following file:
+SV: Testresultaten sparades till följande fil:
+
+<CloseApp>
+EN: You may now close the app!
+SV: Du kan nu stänga programmet!
+
+<CloseApp2>
+EN: Click OK to close the app.
+SV: Klicka på OK för att avsluta programmet.
+
+// Texts in the participant dialog
+<AppPtcTitle>
+EN: Add participant details
+SV: Mata in deltagarinformation
+
+<AppPtcID>
+EN: Participant ID:
+SV: Deltagar-ID:
+
+<AppPtcNr>
+EN: Participant number:
+SV: Deltagarnummer:
+
+<AppPtcOK>
+EN: Continue
+SV: Fortsätt

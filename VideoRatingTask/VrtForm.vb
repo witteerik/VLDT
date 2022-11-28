@@ -12,11 +12,23 @@ Public Class VrtForm
 
     Private CurrentTestStimulus As RatingStimulus
 
+    Private TestResultExportFolder As String = ""
+
+    Private ParticipantID As String = ""
+    Private ParticipantNumber As Integer
+
+    Private WithEvents LoadFilesTimer As New Windows.Forms.Timer With {.Interval = 500}
+    Private WithEvents ShutDownTimer As New Windows.Forms.Timer With {.Interval = 500}
+
     Delegate Sub NoArgumentsDelegate()
 
     Private Sub VrtForm_Load(sender As Object, e As EventArgs) Handles MyBase.Load
 
         Try
+
+            'Setting culture to invariant (this will most probably not affect other threads.... like from timers...)
+            System.Threading.Thread.CurrentThread.CurrentCulture = System.Globalization.CultureInfo.InvariantCulture
+            System.Threading.Thread.CurrentThread.CurrentUICulture = System.Globalization.CultureInfo.InvariantCulture
 
             'https://wiki.videolan.org/VLC_command-line_help/
 
@@ -36,31 +48,110 @@ Public Class VrtForm
             'Utils.SendInfoToLog(String.Join(vbCrLf, Filternames))
 
         Catch ex As Exception
-            MsgBox(ex.ToString)
+            MsgBox(ex.ToString, MsgBoxStyle.Critical, My.Application.Info.Title)
             'ShutDownTimer.Start()
         End Try
 
+        Threading.Thread.Sleep(3000)
 
-        Dim VideoFiles = {"C:\VLDT\PilotExperiment1_Test\Block01\Pseudo\1001-P-16294.mp4", "C:\VLDT\PilotExperiment1_Test\Block01\Pseudo\1002-P-10864.mp4", "C:\VLDT\PilotExperiment1_Test\Block01\Pseudo\1005-P-2817.mp4"}
+        Try
 
-        RatingStimulusSet.LoadTestStimuli(VideoFiles, MyLibVLC, True, Randomizer)
+            Dim CastSplashScreen As VRT_SplashScreen = DirectCast(My.Application.SplashScreen, VRT_SplashScreen)
+            CastSplashScreen.CloseSafe()
+
+        Catch ex As Exception
+            'Ignores any error here
+        End Try
+
+        LoadFilesTimer.Start()
+
+    End Sub
+
+    Private Sub LoadInputFiles() Handles LoadFilesTimer.Tick
+        LoadFilesTimer.Stop()
+
+        Dim fd As New OpenFileDialog
+        fd.Title = "Please select the video rating task file (.txt) and then click OK, or cancel to close the app!"
+        fd.InitialDirectory = My.Computer.FileSystem.SpecialDirectories.MyDocuments
+        fd.CheckFileExists = True
+        fd.Multiselect = False
+
+        Dim DialogResult = fd.ShowDialog(Me)
+        If DialogResult = DialogResult.OK Then
+
+            Dim SelectedFilePath = fd.FileName
+
+            RatingStimulusSet = RatingStimulusSet.LoadSetupFile(SelectedFilePath, MyLibVLC, Randomizer)
+
+            If RatingStimulusSet Is Nothing Then
+                MsgBox("Unable to load the video rating task file from: " & SelectedFilePath & vbCrLf & vbCrLf & "Unable to continue!", MsgBoxStyle.Exclamation, "Error loading file!")
+                ShutDownTimer.Start()
+                Exit Sub
+            End If
+        Else
+            ShutDownTimer.Start()
+            Exit Sub
+        End If
+
+        'Setting GUI strings
+        Replay_Button.Text = Utils.GetGuiString(Utils.GuiStrings.VrtGuiStringKeys.Replay)
+        ChangeView_Button.Text = Utils.GetGuiString(Utils.GuiStrings.VrtGuiStringKeys.ChangeView)
+        ShowNextNonCompleteItem_Button.Text = Utils.GetGuiString(Utils.GuiStrings.VrtGuiStringKeys.Next)
+
+        'Getting the folder in which to store the results
+        Dim fbd = New FolderBrowserDialog()
+        fbd.Description = Utils.GetGuiString(Utils.GuiStrings.VrtGuiStringKeys.SelectFolder)
+        fbd.ShowNewFolderButton = True
+        fbd.SelectedPath = My.Computer.FileSystem.SpecialDirectories.MyDocuments
+
+        Dim fbd_DialogResult = fbd.ShowDialog(Me)
+        If fbd_DialogResult = DialogResult.OK Then
+
+            Dim OutputFolder As String = fbd.SelectedPath
+
+            'Trying to save a log message to the output folder (just to check that it works)
+            Try
+                Utils.SendInfoToLog("Initiated video-based rating decision test. Test results will be saved in the folder: " & OutputFolder,, OutputFolder)
+
+                'String the output folder
+                TestResultExportFolder = OutputFolder
+
+            Catch ex As Exception
+                MsgBox("Unable to save to the specified output folder: " & OutputFolder & vbCrLf & vbCrLf & "Please restart the app and specify a different folder!" & vbCrLf & vbCrLf & "Unable to continue!", MsgBoxStyle.Exclamation, "Invalid output folder selected!")
+                ShutDownTimer.Start()
+                Exit Sub
+            End Try
+        Else
+            MsgBox("No folder in which to store test results was selected!" & vbCrLf & vbCrLf & "Unable to continue!", MsgBoxStyle.Exclamation, "No output folder selected!")
+            ShutDownTimer.Start()
+            Exit Sub
+        End If
+
+        ' Getting the participant ID (and number, if response keys and the order of blocks and should be counter balanced)
+        Dim ParticipantDialog As New ParticipantDialog
+        ParticipantDialog.ShowDialog()
+
+        If ParticipantDialog.DialogResult = DialogResult.OK Then
+            ParticipantNumber = ParticipantDialog.ParticipantNumber
+            ParticipantID = ParticipantDialog.ParticipantID
+        Else
+            ShutDownTimer.Start()
+            Exit Sub
+        End If
+
 
         Item_ProgressBar.Minimum = 0
         Item_ProgressBar.Maximum = RatingStimulusSet.StimulusList.Count
         Item_ProgressBar.Value = 0
 
-        Dim QuestionSet As New List(Of RatingQuestion)
-        QuestionSet.Add(New RatingQuestion With {.Question = "My question...", .CategoricalResponseAlternatives = New List(Of String) From {"1", "2", "3", "4", "5", "6", "7"}})
-        QuestionSet.Add(New RatingQuestion With {.Question = "My second question...", .CategoricalResponseAlternatives = New List(Of String) From {"1", "2", "3", "4", "5"}})
-        QuestionSet.Add(New RatingQuestion With {.Question = "My third question...", .CategoricalResponseAlternatives = New List(Of String) From {"1", "2", "3"}})
-        QuestionSet.Add(New RatingQuestion With {.Question = "My fourth question... which is very very very very very very very very very very very very very very very very very very very very very very very very very very very very very very very very very very very very very very very very very very very very very very very very very very very very very very very very very very very very very very very very long...", .CategoricalResponseAlternatives = New List(Of String) From {"Yes", "No", "Maybe"}})
-        QuestionSet.Add(New RatingQuestion With {.Question = "My fifth question...", .ScaleValues = New List(Of Integer) From {1, 2, 3, 4, 5}})
+        'Enables the MainTableLayoutPanel
+        MainTableLayoutPanel.Enabled = True
 
-        For Each Stimulus In RatingStimulusSet.StimulusList
-            Stimulus.SetQuestions(QuestionSet)
-        Next
+    End Sub
 
-
+    Private Sub ShutDownOnStart() Handles ShutDownTimer.Tick
+        ShutDownTimer.Stop()
+        Me.Close()
     End Sub
 
     Private Sub ChangeItemButton1_Click(sender As Object, e As EventArgs) Handles ShowNextNonCompleteItem_Button.Click
@@ -83,7 +174,7 @@ Public Class VrtForm
             ShowNewStimulus()
         Else
             Item_ProgressBar.Value = RatingStimulusSet.StimulusList.Count
-            MsgBox("The rating task is now completed! You may now close the app!", MsgBoxStyle.Information, "Finished!")
+            MsgBox(Utils.GetGuiString(Utils.GuiStrings.VrtGuiStringKeys.FinishedTest) & vbCrLf & vbCrLf & Utils.GetGuiString(Utils.GuiStrings.VrtGuiStringKeys.CloseApp), MsgBoxStyle.Information, My.Application.Info.Title)
 
             SetDynamicNextPreviousButtonsEnabledState()
 
@@ -99,7 +190,7 @@ Public Class VrtForm
             ShowNewStimulus()
         Else
             ShowNextItem_Button.Enabled = True
-            MsgBox("You're back at the first presented video!", MsgBoxStyle.Information, "You reached the first video!")
+            MsgBox(Utils.GetGuiString(Utils.GuiStrings.VrtGuiStringKeys.FirstVideo), MsgBoxStyle.Information, My.Application.Info.Title)
         End If
 
     End Sub
@@ -112,7 +203,7 @@ Public Class VrtForm
             ShowNewStimulus()
         Else
             ShowNextItem_Button.Enabled = True
-            MsgBox("You've reached the last back at the first presented video!", MsgBoxStyle.Information, "You reached the first video!")
+            MsgBox(Utils.GetGuiString(Utils.GuiStrings.VrtGuiStringKeys.LastVideo), MsgBoxStyle.Information, My.Application.Info.Title)
         End If
 
     End Sub
@@ -180,9 +271,32 @@ Public Class VrtForm
 
     End Sub
 
+    Private Function CreateExportFileName(ByVal ParticipantID As String, ByVal ParticipantNumber As Integer, ByVal IsTrialExport As Boolean) As String
 
+        Dim ParticipantString As String = ParticipantID & "_" & ParticipantNumber.ToString("000")
+
+        If IsTrialExport = True Then
+            Return IO.Path.Combine(TestResultExportFolder, "VRT_" & ParticipantString & "_TestTrialExport", ParticipantString)
+        Else
+            Return IO.Path.Combine(TestResultExportFolder, "VRT_" & ParticipantString)
+        End If
+
+    End Function
+
+    Private TrialExportIncludeHeadings As Boolean = True
     Private Sub ResponseGiven() Handles RatingPanel.ResponseGiven
 
+        'Saving results from the current rating stimulus
+        If CurrentTestStimulus IsNot Nothing Then
+            Dim TrialExportFileName As String = CreateExportFileName(ParticipantID, ParticipantNumber, True)
+
+            'Exporting data
+            Utils.SendInfoToLog(CurrentTestStimulus.ToString(TrialExportIncludeHeadings), IO.Path.GetFileName(TrialExportFileName), IO.Path.GetDirectoryName(TrialExportFileName), True, True)
+            TrialExportIncludeHeadings = False
+
+        End If
+
+        'Prepares for next stimulus
         SetDynamicNextPreviousButtonsEnabledState()
 
         ShowNextNonCompleteItem_Button.Enabled = True
@@ -219,13 +333,18 @@ Public Class VrtForm
 
     End Sub
 
-    Private Sub ShowPreviousStimulus(sender As Object, e As EventArgs) Handles ShowNextItem_Button.Click, ShowPreviousItem_Button.Click
+    Private Sub VrtForm_FormClosing(sender As Object, e As FormClosingEventArgs) Handles MyBase.FormClosing
+
+        'Saving results on close
+        If RatingStimulusSet IsNot Nothing Then
+            Dim ExportFileName As String = CreateExportFileName(ParticipantID, ParticipantNumber, False)
+
+
+            RatingStimulusSet.SaveResults(ExportFileName)
+        End If
 
     End Sub
 
-    Private Sub ShowNextStimulus(sender As Object, e As EventArgs) Handles ShowNextItem_Button.Click
-
-    End Sub
 End Class
 
 

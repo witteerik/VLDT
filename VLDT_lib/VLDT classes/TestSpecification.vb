@@ -81,7 +81,7 @@ Public Class TestSpecification
         If IsPractiseTestMaterial = False Then
 
             If NumberOfBlocks <> NumberOfCandidateBlocks Then
-                MsgBox("Warning! There are more (" & NumberOfCandidateBlocks & " ) block folders in the folder " & GetBlockParentFolder() & " than what is specified in the lexical deciscion test file (" & NumberOfBlocks & ")!" & vbCrLf & vbCrLf &
+                MsgBox("Warning! There are more (" & NumberOfCandidateBlocks & " ) block folders in the folder " & GetBlockParentFolder() & " than what is specified in the lexical decision task file (" & NumberOfBlocks & ")!" & vbCrLf & vbCrLf &
                    "Is this really correct?", MsgBoxStyle.Exclamation, "Detected more block folders than expected!")
             End If
 
@@ -164,12 +164,12 @@ Public Class TestSpecification
                 'Checking that the correct number of video files exist
                 If IsPractiseTestMaterial = True Then
                     If IncludedFiles.Count <> NumberOfPractiseItems Then
-                        MsgBox("The '" & ItemType.ToString & "' folder for the practise block does not contain exactly " & NumberOfPractiseItems & " video files, as indicated in the lexical decision test file!" & vbCr & vbCr & "Unable to continue!", MsgBoxStyle.Exclamation, "Incorrect number of video files!")
+                        MsgBox("The '" & ItemType.ToString & "' folder for the practise block does not contain exactly " & NumberOfPractiseItems & " video files, as indicated in the lexical decision task file!" & vbCr & vbCr & "Unable to continue!", MsgBoxStyle.Exclamation, "Incorrect number of video files!")
                         Return Nothing
                     End If
                 Else
                     If IncludedFiles.Count <> NumberOfTestItems Then
-                        MsgBox("The '" & ItemType.ToString & "' folder for block number " & BlockNumber.ToString("00") & " does not contain exactly " & NumberOfTestItems & " video files, as indicated in the lexical decision test file!" & vbCr & vbCr & "Unable to continue!", MsgBoxStyle.Exclamation, "Incorrect number of video files!")
+                        MsgBox("The '" & ItemType.ToString & "' folder for block number " & BlockNumber.ToString("00") & " does not contain exactly " & NumberOfTestItems & " video files, as indicated in the lexical decision task file!" & vbCr & vbCr & "Unable to continue!", MsgBoxStyle.Exclamation, "Incorrect number of video files!")
                         Return Nothing
                     End If
                 End If
@@ -257,6 +257,10 @@ Public Class TestSpecification
                         Dim TempValue As Integer
                         If Integer.TryParse(VariableValueString, TempValue) = True Then
                             NewTestSpecification.RandomSeed = TempValue
+                            If NewTestSpecification.RandomSeed < 1 Or NewTestSpecification.RandomSeed > 2000000000 Then
+                                MsgBox("The integer value " & "(currently " & VariableValueString & ") set for the variable " & LineVariable & "in the lexical decision task file (" & TestSpecificationFilePath & ") must be larger than 0  and lower than 2.000.000.000. Cannot proceed.", MsgBoxStyle.Exclamation, "Invalid variable value!")
+                                Return Nothing
+                            End If
                         Else
                             MsgBox("Unable to read the value " & VariableValueString & " given for the variable " & LineVariable & " in the lexical decision task file (" & TestSpecificationFilePath & ") as an integer number. Cannot proceed.", MsgBoxStyle.Exclamation, "Invalid variable value!")
                             Return Nothing
@@ -396,7 +400,9 @@ Public Class TestSpecification
                 For Each StringValue In LineValueSplit
                     Dim TempValue As Integer
                     If Integer.TryParse(StringValue.Trim, TempValue) = True Then
-                        CurrentBlockOrder.Add(TempValue)
+
+                        'Adding the value and converting it to a zero-based index
+                        CurrentBlockOrder.Add(TempValue - 1)
                     Else
                         MsgBox("Unable to read the block order value " & StringValue.Trim & " given at the line " & Line & " in the lexical decision task file (" & TestSpecificationFilePath & ") as an integer number. Cannot proceed.", MsgBoxStyle.Exclamation, "Invalid block order value!")
                         Return Nothing
@@ -423,8 +429,8 @@ Public Class TestSpecification
                 Return Nothing
             End If
 
-            '- The BlockOrders must contain all integers from 1 to BlockCount
-            For Block As Integer = 1 To NewTestSpecification.NumberOfBlocks
+            '- The BlockOrders must contain all integers from 0 to BlockCount -1
+            For Block As Integer = 0 To NewTestSpecification.NumberOfBlocks - 1
                 If Not BlockOrder.Contains(Block) Then
                     MsgBox("The block order (" & String.Join(", ", BlockOrder) & ") specified in the lexical decision task file (" & TestSpecificationFilePath & ") lacks block number " & Block & ". Cannot proceed.", MsgBoxStyle.Exclamation, "Invalid block order value!")
                     Return Nothing
@@ -452,7 +458,7 @@ Public Class TestSpecification
         End If
 
         'Loading language strings from file
-        Dim GuiStringsFilePath = IO.Path.Combine(NewTestSpecification.GetBlockParentFolder(), "GuiStrings.txt")
+        Dim GuiStringsFilePath = IO.Path.Combine(NewTestSpecification.GetBlockParentFolder(), "GuiStringsVLDT.txt")
 
         If Utils.GuiStrings.Load(GuiStringsFilePath, NewTestSpecification.GuiLanguage, GetType(Utils.VldtGuiStringKeys)) = False Then
             Return Nothing

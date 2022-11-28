@@ -44,7 +44,11 @@ Public Class RatingPanel
     Public Sub ResponseGivenHandler()
 
         'Checks if all items have responses
-        If CurrentRatingStimulus.HasAllResponses = True Then RaiseEvent ResponseGiven()
+        If CurrentRatingStimulus.HasAllResponses = True Then
+            'Stores the response time
+            CurrentRatingStimulus.ResponseTime = DateTime.Now
+            RaiseEvent ResponseGiven()
+        End If
 
     End Sub
 
@@ -54,29 +58,17 @@ End Class
 Public Class RatingQuestion
     Public Question As String
     Public CategoricalResponseAlternatives As List(Of String)
-    Public ScaleValues As List(Of Integer)
+    Public ScaleValues As List(Of Double)
     Public CategoricalResponse As String = ""
     Public ScaleResponse As Double? = Nothing
 
     Public Enum QuestionTypes
-        None
         Categorical
-        Scale
+        ContinousScale
+        IntegerScale
     End Enum
 
-    Public Function GetQuestionType() As QuestionTypes
-
-        If CategoricalResponseAlternatives IsNot Nothing And ScaleValues IsNot Nothing Then
-            Throw New Exception("Ambigous QuestionType. Both categorical and scale response alternatives have been set for the following question: " & vbCrLf & vbCrLf & Question)
-        ElseIf CategoricalResponseAlternatives IsNot Nothing Then
-            Return QuestionTypes.Categorical
-        ElseIf ScaleValues IsNot Nothing Then
-            Return QuestionTypes.Scale
-        Else
-            Return QuestionTypes.None
-        End If
-
-    End Function
+    Public Property QuestionType As QuestionTypes
 
     Public Function CreateDeepCopy() As RatingQuestion
 
@@ -143,10 +135,10 @@ Public Class RatingQuestionPanel
 
         Me.Controls.Add(QuestionTextBox)
 
-        Select Case Question.GetQuestionType
+        Select Case Question.QuestionType
             Case RatingQuestion.QuestionTypes.Categorical
                 ItemResponseInterface = New RatingCategoriesPanel
-            Case RatingQuestion.QuestionTypes.Scale
+            Case RatingQuestion.QuestionTypes.ContinousScale, RatingQuestion.QuestionTypes.IntegerScale
                 ItemResponseInterface = New RatingScalePanel
         End Select
 
@@ -276,8 +268,8 @@ Public Class RatingScalePanel
 
     Private FontIncrease As Single
 
-    Private Min As Integer
-    Private Max As Integer
+    Private Min As Double
+    Private Max As Double
     Private MidcentreStringFormat As New StringFormat
     Private ResponsePen = New Pen(Brushes.DarkGreen, 2)
 
@@ -393,9 +385,17 @@ Public Class RatingScalePanel
 
                 Dim CurrentScaleData = GetCurrentScaleData()
                 Dim TransformedToResponseScale = (e.X - CurrentScaleData.LeftEndPoint.X) / CurrentScaleData.CurrentGuiScale + Me.Min
+
+                If Question.QuestionType = RatingQuestion.QuestionTypes.IntegerScale Then
+                    'Rounding to the closest integer value
+                    TransformedToResponseScale = Math.Round(TransformedToResponseScale)
+                End If
+
                 TransformedToResponseScale = Math.Min(TransformedToResponseScale, Me.Max)
                 TransformedToResponseScale = Math.Max(TransformedToResponseScale, Me.Min)
+
                 Question.ScaleResponse = TransformedToResponseScale
+
                 Me.Invalidate()
                 RaiseEvent ResponseGiven()
 

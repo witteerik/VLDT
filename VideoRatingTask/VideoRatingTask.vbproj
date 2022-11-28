@@ -131,6 +131,12 @@
     <Compile Include="VrtForm.vb">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="VRT_SplashScreen.designer.vb">
+      <DependentUpon>VRT_SplashScreen.vb</DependentUpon>
+    </Compile>
+    <Compile Include="VRT_SplashScreen.vb">
+      <SubType>Form</SubType>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="My Project\Resources.resx">
@@ -141,6 +147,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="VrtForm.resx">
       <DependentUpon>VrtForm.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="VRT_SplashScreen.resx">
+      <DependentUpon>VRT_SplashScreen.vb</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
@@ -173,6 +182,9 @@
       <Project>{BC2BC369-C816-4A24-A761-48D4AC8E96D9}</Project>
       <Name>VLDT_lib</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\ICON.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />
   <Import Project="..\packages\VideoLAN.LibVLC.Windows.3.0.17.4\build\VideoLAN.LibVLC.Windows.targets" Condition="Exists('..\packages\VideoLAN.LibVLC.Windows.3.0.17.4\build\VideoLAN.LibVLC.Windows.targets')" />

@@ -172,7 +172,7 @@ Namespace Utils
     Public Module Math
 
         ''' <summary>
-        ''' Returns a vector of length n, with random integers sampled in from the range of min (includive) to max (exclusive).
+        ''' Returns a vector of length n, with random integers sampled in from the range of min (inclusive) to max (exclusive).
         ''' </summary>
         ''' <returns></returns>
         Public Function SampleWithoutReplacement(ByVal n As Integer, ByVal min As Integer, ByVal max As Integer,

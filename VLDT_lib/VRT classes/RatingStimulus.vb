@@ -132,6 +132,10 @@ Public Class RatingStimulusSet
                                     If CurrentQuestion.CategoricalResponseAlternatives Is Nothing Then CurrentQuestion.CategoricalResponseAlternatives = New List(Of String)
                                     If TrimmedValue <> "" Then CurrentQuestion.CategoricalResponseAlternatives.Add(TrimmedValue)
                                 Next
+
+                            ElseIf CurrentQuestion.QuestionType = RatingQuestion.QuestionTypes.Text Then
+                                'Ignores any value given for response if it's a text type question
+
                             Else
 
                                 'It will be either ContinousScale or IntegerScale, which are treated the same here
@@ -231,6 +235,8 @@ Public Class RatingStimulusSet
                         MsgBox("The following continous-scale question loaded from the file " & SetupFilePath & " has invalid response values. The variable 'Responses' in must contain at least two non-equal numeric values. Unable to continue!" & vbCrLf & vbCrLf & Question.Question, MsgBoxStyle.Exclamation, "Invalid variable value!")
                         Return Nothing
                     End If
+                Case RatingQuestion.QuestionTypes.Text
+                    'We need to do nothing here, as no response values are loaded for text typ questions
             End Select
         Next
 
@@ -392,6 +398,11 @@ Public Class RatingStimulus
                         Return False
                     End If
 
+                Case RatingQuestion.QuestionTypes.Text
+                    If Question.TextResponse.trim = "" Then
+                        Return False
+                    End If
+
                 Case Else
                     Throw New NotImplementedException("Unknown QuestionType (" & Question.QuestionType & ") supplied  for question: " & Question.Question)
             End Select
@@ -409,15 +420,12 @@ Public Class RatingStimulus
         HeadingList.Add("StimulusNumber")
         HeadingList.Add("VideoFileName")
         HeadingList.Add("VideoFilePath")
+        HeadingList.Add("QuestionNr")
+        HeadingList.Add("Question")
+        HeadingList.Add("QuestionType")
+        HeadingList.Add("PresentedResponseAlternatives")
+        HeadingList.Add("Response")
         HeadingList.Add("ResponseTime(HH:MM:SS:MMM)")
-
-        For q = 0 To Questions.Count - 1
-            HeadingList.Add("Question_" & q + 1)
-            HeadingList.Add("QuestionType_" & q + 1)
-            HeadingList.Add("PresentedResponseAlternatives_" & q + 1)
-            HeadingList.Add("Response_" & q + 1)
-        Next
-
 
         Return String.Join(vbTab, HeadingList)
 
@@ -431,14 +439,16 @@ Public Class RatingStimulus
             OutputList.Add(GetExportHeadings)
         End If
 
-        Dim ColumnList As New List(Of String)
-
-        ColumnList.Add(StimulusNumber)
-        ColumnList.Add(FileName)
-        ColumnList.Add(FilePath)
-        ColumnList.Add(GetTimeString(ResponseTime))
-
         For q = 0 To Questions.Count - 1
+
+            Dim ColumnList As New List(Of String)
+
+            ColumnList.Add(StimulusNumber)
+            ColumnList.Add(FileName)
+            ColumnList.Add(FilePath)
+
+            ColumnList.Add(q + 1)
+
             Dim Question = Questions(q)
 
             ColumnList.Add(Question.Question)
@@ -446,6 +456,9 @@ Public Class RatingStimulus
 
             If Question.QuestionType = RatingQuestion.QuestionTypes.Categorical Then
                 ColumnList.Add(String.Join(" | ", Question.CategoricalResponseAlternatives))
+            ElseIf Question.QuestionType = RatingQuestion.QuestionTypes.Text Then
+                'There are no alternatives for text type questions. Exports NA
+                ColumnList.Add("NA")
             Else
                 ColumnList.Add(String.Join(" | ", Question.ScaleValues))
             End If
@@ -456,6 +469,12 @@ Public Class RatingStimulus
                 Else
                     ColumnList.Add("MissingValue")
                 End If
+            ElseIf Question.QuestionType = RatingQuestion.QuestionTypes.Text Then
+                If Question.TextResponse.Trim <> "" Then
+                    ColumnList.Add(Question.TextResponse)
+                Else
+                    ColumnList.Add("MissingValue")
+                End If
             Else
                 If Question.ScaleResponse.HasValue = True Then
                     ColumnList.Add(Question.ScaleResponse)
@@ -463,9 +482,13 @@ Public Class RatingStimulus
                     ColumnList.Add("MissingValue")
                 End If
             End If
+
+            ColumnList.Add(GetTimeString(ResponseTime))
+
+            OutputList.Add(String.Join(vbTab, ColumnList))
+
         Next
 
-        OutputList.Add(String.Join(vbTab, ColumnList))
 
         Return String.Join(vbCrLf, OutputList)
 

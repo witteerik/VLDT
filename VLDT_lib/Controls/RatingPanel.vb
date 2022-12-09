@@ -10,6 +10,7 @@ Public Class RatingPanel
     Public CurrentRatingStimulus As RatingStimulus
 
     Public Event ResponseGiven()
+    Public Event ResponseRemoved()
 
     Public Sub AddQuestions(ByRef CurrentRatingStimulus As RatingStimulus)
 
@@ -24,6 +25,7 @@ Public Class RatingPanel
         For Each Question In CurrentRatingStimulus.Questions
             Dim NewItemRatingPanel As New VLDT_lib.RatingQuestionPanel(2, RandomColorSource)
             AddHandler NewItemRatingPanel.ResponseGiven, AddressOf ResponseGivenHandler
+            AddHandler NewItemRatingPanel.ResponseRemoved, AddressOf ResponseRemovedHandler
             Me.Controls.Add(NewItemRatingPanel)
             NewItemRatingPanel.AddQuestion(Question)
         Next
@@ -52,6 +54,14 @@ Public Class RatingPanel
 
     End Sub
 
+    Public Sub ResponseRemovedHandler()
+
+        'Raises the ResponseRemoved event so that the main form can inactivate next/previous buttons
+        RaiseEvent ResponseRemoved()
+
+    End Sub
+
+
 End Class
 
 <Serializable>
@@ -61,11 +71,13 @@ Public Class RatingQuestion
     Public ScaleValues As List(Of Double)
     Public CategoricalResponse As String = ""
     Public ScaleResponse As Double? = Nothing
+    Public TextResponse As String = ""
 
     Public Enum QuestionTypes
         Categorical
         ContinousScale
         IntegerScale
+        Text
     End Enum
 
     Public Property QuestionType As QuestionTypes
@@ -104,6 +116,7 @@ Public Class RatingQuestionPanel
     Private QuestionTextBox As Label
 
     Public Event ResponseGiven()
+    Public Event ResponseRemoved()
 
     Public Sub New()
         Me.New(2, New Random)
@@ -140,6 +153,8 @@ Public Class RatingQuestionPanel
                 ItemResponseInterface = New RatingCategoriesPanel
             Case RatingQuestion.QuestionTypes.ContinousScale, RatingQuestion.QuestionTypes.IntegerScale
                 ItemResponseInterface = New RatingScalePanel
+            Case RatingQuestion.QuestionTypes.Text
+                ItemResponseInterface = New RatingTextPanel
         End Select
 
         Me.Controls.Add(ItemResponseInterface)
@@ -163,6 +178,10 @@ Public Class RatingQuestionPanel
         RaiseEvent ResponseGiven()
     End Sub
 
+    Public Sub ResponseRemovedHandler() Handles ItemResponseInterface.ResponseRemoved
+        RaiseEvent ResponseRemoved()
+    End Sub
+
 End Class
 
 Public Interface IRatingResponse
@@ -170,6 +189,7 @@ Public Interface IRatingResponse
     Sub ResizeNow()
     Function GetHeight()
     Event ResponseGiven()
+    Event ResponseRemoved()
 End Interface
 
 Public Class RatingCategoriesPanel
@@ -189,6 +209,9 @@ Public Class RatingCategoriesPanel
     End Sub
 
     Public Event ResponseGiven() Implements IRatingResponse.ResponseGiven
+
+    'This class cannot remove responses and does not need to raise this event
+    Public Event ResponseRemoved() Implements IRatingResponse.ResponseRemoved
 
     Public Sub AddRatingQuestion(ByRef Question As RatingQuestion) Implements IRatingResponse.AddRatingQuestion
 
@@ -276,6 +299,9 @@ Public Class RatingScalePanel
     Private Question As RatingQuestion
 
     Public Event ResponseGiven() Implements IRatingResponse.ResponseGiven
+
+    'This class cannot remove responses and does not need to raise this event
+    Public Event ResponseRemoved() Implements IRatingResponse.ResponseRemoved
 
     Public Sub New()
         Me.New(2)
@@ -407,5 +433,75 @@ End Class
 Public Class RadioButtonWithResponseText
     Inherits RadioButton
     Public Property ResponseText As String
+
+End Class
+
+
+Public Class RatingTextPanel
+    Inherits Panel
+    Implements IRatingResponse
+
+    Private FontIncrease As Single
+    Private Question As RatingQuestion
+
+    Public Sub New()
+        Me.New(2)
+    End Sub
+
+    Public Sub New(ByVal FontIncrease As Single)
+        Me.FontIncrease = FontIncrease
+        Me.BackColor = Color.Transparent
+    End Sub
+
+    Public Event ResponseGiven() Implements IRatingResponse.ResponseGiven
+
+    Public Event ResponseRemoved() Implements IRatingResponse.ResponseRemoved
+
+    Public Sub AddRatingQuestion(ByRef Question As RatingQuestion) Implements IRatingResponse.AddRatingQuestion
+
+        Me.Question = Question
+
+        'Adding a text box where the response should be entered by the user
+        Dim NewResponseTextBox As New TextBox
+        NewResponseTextBox.Dock = DockStyle.Fill
+        NewResponseTextBox.Multiline = True
+        NewResponseTextBox.Font = New Font(NewResponseTextBox.Font.FontFamily, NewResponseTextBox.Font.Size + FontIncrease)
+        NewResponseTextBox.ScrollBars = ScrollBars.Vertical
+
+        'Adds repsonses already given
+        If Question.TextResponse <> "" Then
+            NewResponseTextBox.Text = Question.TextResponse
+        End If
+
+        AddHandler NewResponseTextBox.TextChanged, AddressOf HandleResponse
+        Me.Controls.Add(NewResponseTextBox)
+
+    End Sub
+
+    Public Sub ResizeNow() Implements IRatingResponse.ResizeNow
+
+        If Me.Question Is Nothing Then Exit Sub
+
+        Me.Width = Parent.ClientRectangle.Width - Parent.Padding.Horizontal
+        Me.Height = 70
+
+    End Sub
+
+    Public Function GetHeight() Implements IRatingResponse.GetHeight
+        Return Me.Height + Me.Padding.Vertical
+    End Function
+
+    Public Sub HandleResponse(sender As Object, e As EventArgs)
+
+        'Stores the response
+        Question.TextResponse = sender.Text
+
+        If Question.TextResponse <> "" Then
+            RaiseEvent ResponseGiven()
+        Else
+            RaiseEvent ResponseRemoved()
+        End If
+
+    End Sub
 
 End Class

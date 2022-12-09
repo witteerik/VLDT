@@ -163,6 +163,9 @@ Public Class VrtForm
     ''' </summary>
     Private Sub ShowNextNonCompleteStimulus()
 
+        'Exporting the current trial before moving to next
+        ExportCurrentTrial()
+
         If RatingStimulusSet.StimulusList.Count = 0 Then
             MsgBox("No videos have been loaded!", MsgBoxStyle.Information, "Nothing to show!")
             Exit Sub
@@ -184,6 +187,9 @@ Public Class VrtForm
 
     Private Sub ShowPreviousStimulus() Handles ShowPreviousItem_Button.Click
 
+        'Exporting the current trial before moving to previous
+        ExportCurrentTrial()
+
         CurrentTestStimulus = RatingStimulusSet.GetPreviousStimulus
 
         If CurrentTestStimulus IsNot Nothing Then
@@ -197,6 +203,9 @@ Public Class VrtForm
 
     Private Sub ShowNextStimulus() Handles ShowNextItem_Button.Click
 
+        'Exporting the current trial before moving to next
+        ExportCurrentTrial()
+
         CurrentTestStimulus = RatingStimulusSet.GetNextStimulus
 
         If CurrentTestStimulus IsNot Nothing Then
@@ -209,6 +218,8 @@ Public Class VrtForm
     End Sub
 
     Private Sub ShowNewStimulus()
+
+        'Locks the GUI and plays the video
 
         ShowNextNonCompleteItem_Button.Enabled = False
         ShowNextItem_Button.Enabled = False
@@ -226,6 +237,21 @@ Public Class VrtForm
         Catch ex As Exception
             MsgBox("An error has occured! Unable to play the current video. Please click ok to continue!", MsgBoxStyle.Critical, "Unable to play video!")
         End Try
+
+    End Sub
+
+    Private TrialExportIncludeHeadings As Boolean = True
+    Private Sub ExportCurrentTrial()
+
+        'Saving results from the current rating stimulus
+        If CurrentTestStimulus IsNot Nothing Then
+
+            Dim TrialExportFileName As String = CreateExportFileName(ParticipantID, ParticipantNumber, True)
+            'Exporting data
+            Utils.SendInfoToLog(CurrentTestStimulus.ToString(TrialExportIncludeHeadings), IO.Path.GetFileName(TrialExportFileName), IO.Path.GetDirectoryName(TrialExportFileName), True, True)
+            TrialExportIncludeHeadings = False
+
+        End If
 
     End Sub
 
@@ -269,6 +295,11 @@ Public Class VrtForm
 
         RatingPanel.AddQuestions(CurrentTestStimulus)
 
+        If CurrentTestStimulus.HasAllResponses = True Then
+            'Unlocks next/previous buttons if all responses have already been given
+            PrepareForStimulusSwap()
+        End If
+
     End Sub
 
     Private Function CreateExportFileName(ByVal ParticipantID As String, ByVal ParticipantNumber As Integer, ByVal IsTrialExport As Boolean) As String
@@ -283,23 +314,27 @@ Public Class VrtForm
 
     End Function
 
-    Private TrialExportIncludeHeadings As Boolean = True
     Private Sub ResponseGiven() Handles RatingPanel.ResponseGiven
 
-        'Saving results from the current rating stimulus
-        If CurrentTestStimulus IsNot Nothing Then
-            Dim TrialExportFileName As String = CreateExportFileName(ParticipantID, ParticipantNumber, True)
+        PrepareForStimulusSwap()
 
-            'Exporting data
-            Utils.SendInfoToLog(CurrentTestStimulus.ToString(TrialExportIncludeHeadings), IO.Path.GetFileName(TrialExportFileName), IO.Path.GetDirectoryName(TrialExportFileName), True, True)
-            TrialExportIncludeHeadings = False
+    End Sub
 
-        End If
+    Private Sub PrepareForStimulusSwap()
 
         'Prepares for next stimulus
         SetDynamicNextPreviousButtonsEnabledState()
 
         ShowNextNonCompleteItem_Button.Enabled = True
+
+    End Sub
+
+
+    Private Sub ResponseRemoved() Handles RatingPanel.ResponseRemoved
+
+        ShowPreviousItem_Button.Enabled = False
+        ShowNextItem_Button.Enabled = False
+        ShowNextNonCompleteItem_Button.Enabled = False
 
     End Sub
 

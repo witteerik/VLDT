@@ -1,5 +1,5 @@
 <Setup>
-NumberOfQuestions = 4 // Supply the number of questions to be loaded. (Used verify that the correct number of questions were successfully loaded.)
+NumberOfQuestions = 5 // Supply the number of questions to be loaded. (Used verify that the correct number of questions were successfully loaded.)
 NumberOfVideos = 2 // Supply the number of video files that should be loaded. (Used verify that the correct number of videos were successfully loaded.)
 RandomizeVideos = True // True or False. Set to True to randomize the order of videos or false to keep the order supplied below. If not set, the default value True will be used.)
 GuiLanguage = SV // Default GUI language is English (EN). More languages can be added by the user by modifying the file "GuiStringsVRT.txt"
@@ -7,20 +7,24 @@ GuiLanguage = SV // Default GUI language is English (EN). More languages can be 
 <Questions>
 
 Question = This is my first categorical question
-Type =  Categorical // Possible values are Categorical, ContinousScale, IntegerScale
+Type =  Categorical // Possible values are Categorical, ContinousScale, IntegerScale, Text
 Responses = Yes | Maybe | No // Vertical-line-delimited categorical response alternatives or scale values
 
 Question = This is my first scale question
-Type = IntegerScale // Possible values are Categorical, ContinousScale, IntegerScale
+Type = IntegerScale // Possible values are Categorical, ContinousScale, IntegerScale, Text
 Responses = 1 | 5 | 10 // Vertical-line-delimited categorical response alternatives or scale values
 
 Question = This is my second categorical question
-Type = Categorical // Possible values are Categorical, ContinousScale, IntegerScale
+Type = Categorical // Possible values are Categorical, ContinousScale, IntegerScale, Text
 Responses = Inte alls | Väldigt lite | Ganska lite | Lagom | Ganska mycket | Jättemycket // Vertical-line-delimited categorical response alternatives or scale values
 
 Question = This is my second scale question
-Type = ContinousScale // Possible values are Categorical, ContinousScale, IntegerScale
+Type = ContinousScale // Possible values are Categorical, ContinousScale, IntegerScale, Text
 Responses = 1 | 3 | 5 | 7 // Vertical-line-delimited categorical response alternatives or scale values
+
+Question = This is my first free-text question? // Note that response is mandatory. However, the user can response with a hyphen or similar if he/she do not want to respond
+Type = Text // Possible values are Categorical, ContinousScale, IntegerScale, Text
+Responses = // Irrelevant for questions of type Text
 
 <VideoFolders>
 // File folders relative to the folder in which the current file is located, from which all videos files should be loaded.

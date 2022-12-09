@@ -9,6 +9,8 @@ Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "VLDT_lib", "VLDT_lib\VLDT_l
 EndProject
 Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "VideoRatingTask", "VideoRatingTask\VideoRatingTask.vbproj", "{DF017509-813A-4DE8-8987-13171C57B04E}"
 EndProject
+Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "VideoBasedLearningTask", "VideoBasedLearningTask\VideoBasedLearningTask.vbproj", "{FD4D6D2A-156E-489E-8E37-DAA49176E8D9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{DF017509-813A-4DE8-8987-13171C57B04E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DF017509-813A-4DE8-8987-13171C57B04E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DF017509-813A-4DE8-8987-13171C57B04E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FD4D6D2A-156E-489E-8E37-DAA49176E8D9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FD4D6D2A-156E-489E-8E37-DAA49176E8D9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FD4D6D2A-156E-489E-8E37-DAA49176E8D9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FD4D6D2A-156E-489E-8E37-DAA49176E8D9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -378,6 +378,15 @@ Public Class VrtForm
             RatingStimulusSet.SaveResults(ExportFileName)
         End If
 
+        'Stops all timers before closing the app
+        ShutDownTimer.Stop()
+
+        'Disposes all media, the media player and the LibVLC instances
+        'If PractiseTestMaterial IsNot Nothing Then PractiseTestMaterial.DisposeVideos()
+        'If SharpTestMaterial IsNot Nothing Then SharpTestMaterial.DisposeVideos()
+        VideoPlayer.Dispose()
+        MyLibVLC.Dispose()
+
     End Sub
 
 End Class

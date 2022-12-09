@@ -126,6 +126,9 @@
     <Compile Include="VLDT classes\TestMaterial.vb" />
     <Compile Include="VLDT classes\TestSpecification.vb" />
     <Compile Include="Utils.vb" />
+    <Compile Include="VLT classes\VideoButton.vb">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="VRT classes\RatingStimulus.vb" />
   </ItemGroup>
   <ItemGroup>

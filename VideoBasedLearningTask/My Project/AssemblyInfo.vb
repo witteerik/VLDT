@@ -8,17 +8,17 @@ Imports System.Runtime.InteropServices
 
 ' Review the values of the assembly attributes
 
-<Assembly: AssemblyTitle("Video-Based Rating Task (VRT)")>
+<Assembly: AssemblyTitle("VideoBasedLearningTask")>
 <Assembly: AssemblyDescription("")>
 <Assembly: AssemblyCompany("")>
-<Assembly: AssemblyProduct("Video-Based Rating Task (VRT)")>
-<Assembly: AssemblyCopyright("Copyright © 2022 Erik Witte")>
+<Assembly: AssemblyProduct("VideoBasedLearningTask")>
+<Assembly: AssemblyCopyright("Copyright ©  2022")>
 <Assembly: AssemblyTrademark("")>
 
 <Assembly: ComVisible(False)>
 
 'The following GUID is for the ID of the typelib if this project is exposed to COM
-<Assembly: Guid("b1b2b65c-862c-4e30-bd93-d8b8fdc507cb")>
+<Assembly: Guid("46a63346-38ad-4bab-b3bd-bebd72023a50")>
 
 ' Version information for an assembly consists of the following four values:
 '
@@ -31,5 +31,5 @@ Imports System.Runtime.InteropServices
 ' by using the '*' as shown below:
 ' <Assembly: AssemblyVersion("1.0.*")>
 
-<Assembly: AssemblyVersion("0.2.0.0")>
-<Assembly: AssemblyFileVersion("0.2.0.0")>
+<Assembly: AssemblyVersion("1.0.0.0")>
+<Assembly: AssemblyFileVersion("1.0.0.0")>

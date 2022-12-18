@@ -14,6 +14,7 @@ Public Class LdtForm
     Private PseudoKey As Keys
     Private RealColor As Color = Color.DarkGreen
     Private PseudoColor As Color = Color.Red
+    Private ResponseColor As Color = Color.WhiteSmoke
     Private TestResultExportFolder As String = ""
     Private PractiseTestMaterial As TestMaterial = Nothing
     Private SharpTestMaterial As TestMaterial = Nothing
@@ -795,17 +796,20 @@ Public Class LdtForm
                 FlashBackground()
             Else
 
-                If Result = Response.Real Then
-                    'Changes the color to DarkGreen if the answer was 'Real'
-                    Background_TableLayoutPanel.BackColor = RealColor
-                    Background_TableLayoutPanel.Invalidate()
-                    Background_TableLayoutPanel.Update()
-                Else
-                    'Changes the color to Red if the answer was 'Pseudo'
-                    Background_TableLayoutPanel.BackColor = PseudoColor
-                    Background_TableLayoutPanel.Invalidate()
-                    Background_TableLayoutPanel.Update()
-                End If
+                'Changes the color to ResponseColor when receiving the response
+                Background_TableLayoutPanel.BackColor = ResponseColor
+
+                'If Result = Response.Real Then
+                '    'Changes the color to DarkGreen if the answer was 'Real'
+                '    Background_TableLayoutPanel.BackColor = RealColor
+                '    Background_TableLayoutPanel.Invalidate()
+                '    Background_TableLayoutPanel.Update()
+                'Else
+                '    'Changes the color to Red if the answer was 'Pseudo'
+                '    Background_TableLayoutPanel.BackColor = PseudoColor
+                '    Background_TableLayoutPanel.Invalidate()
+                '    Background_TableLayoutPanel.Update()
+                'End If
 
             End If
 

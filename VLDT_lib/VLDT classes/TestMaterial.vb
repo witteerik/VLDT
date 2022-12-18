@@ -236,6 +236,8 @@
             Exit Sub
         End If
 
+        Me.PresentedItems = 0
+
         For Each Block In Me
 
             Block.PresentedItems = 0

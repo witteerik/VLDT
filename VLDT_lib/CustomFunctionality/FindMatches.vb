@@ -12,7 +12,15 @@
     ''' Containing the list names in the order loaded, with SourceList at index zero and each TargetList in TargetLists following
     ''' </summary>
     ''' <returns></returns>
-    Public Property ListNames As New List(Of String)
+    Public Property ListNames As List(Of String) = Nothing
+
+    ''' <summary>
+    ''' Holds the names of variables used for matching
+    ''' </summary>
+    ''' <returns></returns>
+    Public Property VariableNames As List(Of String) = Nothing
+
+    Public Property VariableHasDecreasingOrder As List(Of Boolean) = Nothing
 
     Public Rnd As Random
     Public Sub New(Optional ByVal Seed As Integer = 42)
@@ -31,8 +39,12 @@
 
         Dim InputLines() As String = System.IO.File.ReadAllLines(InputPath, System.Text.Encoding.UTF8)
 
-        Dim VariableNames As New List(Of String)
+        VariableNames = New List(Of String)
+        ListNames = New List(Of String)
+        VariableHasDecreasingOrder = New List(Of Boolean)
+
         Dim FirstLineRead As Boolean = False
+        Dim SecondLineRead As Boolean = False
 
         For i = 0 To InputLines.Length - 1
 
@@ -51,17 +63,42 @@
                     Dim VariebleName = LineSplit(col).Trim
                     If VariebleName = "" Then Throw New Exception("Missing variable name for column " & col)
                     If VariableNames.Contains(VariebleName) = False Then VariableNames.Add(VariebleName)
+
                 Next
 
                 FirstLineRead = True
                 Continue For
             End If
 
-            'First column should be ListName, and the first list should be the source list
-            'Second column should be ItemName
-            'Remaining columns should be variables to match
+            If SecondLineRead = False Then
+                'Second line should contain IsIncreasingRankOrder, for each variable, in the same column as the corresponding variable 
 
-            Dim ListName = LineSplit(0).Trim
+                'Reading IsIncreasingRankOrder for each variable variable 
+                For col = 2 To LineSplit.Length - 1
+                    Dim IsIncreasingRankOrder = LineSplit(col).Trim
+                    If IsIncreasingRankOrder = "" Then Throw New Exception("Missing value for IsIncreasingRankOrder in column " & col & " (use either True or False)")
+                    Dim ParseResult As Boolean
+                    If Boolean.TryParse(IsIncreasingRankOrder, ParseResult) = True Then
+                        Me.VariableHasDecreasingOrder.Add(ParseResult)
+                    Else
+                        Throw New Exception("Unable to read the value " & IsIncreasingRankOrder & " for IsIncreasingRankOrder in column " & col & " as a boolean value (use either True or False)")
+                    End If
+                Next
+
+                'Checks that VariableNames and VariableHasDecreasingOrder have the same length
+                If VariableNames.Count <> VariableHasDecreasingOrder.Count Then
+                    Throw New Exception("The number of match-variable names (on the first line) and values for IsIncreasingRankOrder (on the second line) differ. They need to be the same!")
+                End If
+
+                SecondLineRead = True
+                    Continue For
+                End If
+
+                'First column should be ListName, and the first list should be the source list
+                'Second column should be ItemName
+                'Remaining columns should be variables to match
+
+                Dim ListName = LineSplit(0).Trim
             If ListName = "" Then Throw New Exception("Missing list name on line " & i)
             If ListNames.Contains(ListName) = False Then
                 ListNames.Add(ListName)
@@ -106,7 +143,7 @@
 
     End Sub
 
-    Public Sub MatchLists(ByVal OutputPath As String, Optional ByVal Count As Integer = 100, Optional Iterations As Integer = 10000, Optional ByVal IncludeSd As Boolean = False)
+    Public Sub MatchLists(Optional ByVal Count As Integer = 100, Optional Iterations As Integer = 10000, Optional ByVal IncludeSd As Boolean = False)
 
         'Limiting Count to the available items in each list
         If SourceList.Count < Count Then Count = SourceList.Count
@@ -196,10 +233,85 @@
 
         FinalResultLists = BestIterationResult
 
-        SaveResults(OutputPath)
-
         Console.WriteLine("Finished matching items")
         MsgBox("Finished matching items")
+
+    End Sub
+
+    Public Sub AssignToBlocks(ByVal BlockCount As Integer)
+
+        For Each ResultList In FinalResultLists
+
+            For i = 0 To VariableNames.Count - 1
+
+                Dim MatchVariable = VariableNames(i)
+                Dim DecreasingOrder = VariableHasDecreasingOrder(i)
+
+                'Rank order items according to variable values
+                Dim RankList As New List(Of Tuple(Of Double, MatchItem))
+                For Each item In ResultList.Value
+                    RankList.Add(New Tuple(Of Double, MatchItem)(item.MatchVariables(MatchVariable), item))
+                Next
+
+                RankList.Sort(Function(x, y) x.Item1.CompareTo(y.Item1))
+
+                Dim RankOrder As Integer = 1
+                If DecreasingOrder = True Then
+                    RankOrder = RankList.Count
+                End If
+
+                For Each item In RankList
+                    item.Item2.RankVariables.Add(MatchVariable, RankOrder)
+                    If DecreasingOrder = True Then
+                        RankOrder -= 1
+                    Else
+                        RankOrder += 1
+                    End If
+                Next
+            Next
+        Next
+
+        For Each ResultList In FinalResultLists
+            For Each Item In ResultList.Value
+                Dim RankSum = Item.RankVariables.Values.Sum
+                Item.RankVariables.Add("RankSum", RankSum)
+            Next
+        Next
+
+        'For Each ResultList In FinalResultLists
+        '    For Each Item In ResultList.Value
+        '        Console.WriteLine(ResultList.Key & " " & String.Join(" ", Item.MatchVariables.Keys) & " " & String.Join(" ", Item.MatchVariables.Values) & " " & String.Join(" ", Item.RankVariables.Keys) & " " & String.Join(" ", Item.RankVariables.Values))
+        '    Next
+        'Next
+
+        For Each ResultList In FinalResultLists
+
+            'Rank order items according to variable values
+            Dim RankList As New List(Of Tuple(Of Double, MatchItem))
+            For Each item In ResultList.Value
+                RankList.Add(New Tuple(Of Double, MatchItem)(item.RankVariables("RankSum"), item))
+            Next
+
+            RankList.Sort(Function(x, y) x.Item1.CompareTo(y.Item1))
+
+            Dim Index As Integer = 0
+
+            For Each item In RankList
+
+                Dim A = Index
+                Dim B = A Mod BlockCount
+                Dim C = A Mod (2 * BlockCount)
+                Dim D = C - B
+                Dim E = D - (B + 1)
+                Dim Block = Math.Abs(E) + D / BlockCount
+
+                item.Item2.RankVariables.Add("Block", Block)
+
+                'Console.WriteLine(Block)
+                Index += 1
+            Next
+        Next
+
 
     End Sub
 
@@ -362,6 +474,9 @@
                 For Each Variable In Item.MatchVariables
                     RowList.Add(Variable.Key)
                 Next
+                For Each Variable In Item.RankVariables
+                    RowList.Add(Variable.Key)
+                Next
                 Exit For
             Next
             'Adding the row
@@ -384,6 +499,10 @@
 
                 'Adding all variables (note that the order here is sorted and therefore mat differ from the variable order in the input file.
                 For Each Variable In Item.MatchVariables
+                    RowList.Add(Variable.Value)
+                Next
+
+                For Each Variable In Item.RankVariables
                     RowList.Add(Variable.Value)
                 Next
 
@@ -412,6 +531,12 @@
         ''' </summary>
         ''' <returns></returns>
         Public Property MatchVariables As New SortedList(Of String, Double)
+
+        ''' <summary>
+        ''' A list of rank ordered variables, key=variable name, value=rank value
+        ''' </summary>
+        ''' <returns></returns>
+        Public Property RankVariables As New SortedList(Of String, Double)
 
 
     End Class

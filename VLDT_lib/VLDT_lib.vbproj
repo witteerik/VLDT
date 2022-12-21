@@ -93,6 +93,7 @@
     <Compile Include="Controls\RatingPanel.vb">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="CustomFunctionality\FindMatches.vb" />
     <Compile Include="VLDT classes\Block.vb" />
     <Compile Include="Dialogs\ParticipantDialog.designer.vb">
       <DependentUpon>ParticipantDialog.vb</DependentUpon>

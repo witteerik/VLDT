@@ -69,5 +69,13 @@ Public Class VltForm
 
     End Sub
 
+    Private Sub Button2_Click(sender As Object, e As EventArgs) Handles Button2.Click
 
+        'Temprarily high-jacking this app to run calculation of FindMatches
+
+        Dim FindMatches = New VLDT_lib.FindMatches
+        FindMatches.Feed("C:\EriksDokument\RStudioProjects\SSMS\Final_Selection\FindMatchesInput_100.txt")
+        FindMatches.MatchLists("C:\EriksDokument\RStudioProjects\SSMS\Final_Selection\FindMatchesOutput_80.txt", 80,, False)
+
+    End Sub
 End Class

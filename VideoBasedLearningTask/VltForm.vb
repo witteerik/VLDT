@@ -73,11 +73,11 @@ Public Class VltForm
 
         'Temprarily high-jacking this app to run calculation of FindMatches
 
-        Dim FindMatches = New VLDT_lib.FindMatches
-        FindMatches.Feed("C:\EriksDokument\RStudioProjects\SSMS\Final_Selection\Step 8 - BlockAssignment\FindMatchesInput.txt")
-        FindMatches.MatchLists(100, 10000, False)
-        FindMatches.AssignToBlocks(10)
-        FindMatches.SaveResults("C:\EriksDokument\RStudioProjects\SSMS\Final_Selection\FindMatchesOutput_100.txt")
+        Dim FindMatches = New VLDT_lib.FindMatches(43)
+        FindMatches.Feed("C:\EriksDokument\RStudioProjects\SSMS\Final_Selection\Step 8 - BlockAssignment\FindMatchedAlgorithmInput.txt")
+        FindMatches.MatchLists(100, 50000, False)
+        FindMatches.AssignToBlocks(10, False, 50000)
+        FindMatches.SaveResults("C:\EriksDokument\RStudioProjects\SSMS\Final_Selection\Step 8 - BlockAssignment\FindMatchesOutput_100.txt")
 
     End Sub
 End Class

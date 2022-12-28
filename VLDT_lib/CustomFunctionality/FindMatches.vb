@@ -143,7 +143,15 @@
 
     End Sub
 
-    Public Sub MatchLists(Optional ByVal Count As Integer = 100, Optional Iterations As Integer = 10000, Optional ByVal IncludeSd As Boolean = False)
+    Public Enum InterIterationComparisonMethods
+        AllBetter
+        ProportionIsBetter
+        BetterOnAverage
+    End Enum
+
+    Public Sub MatchLists(Optional ByVal Count As Integer = 100, Optional Iterations As Integer = 10000, Optional ByVal IncludeSd As Boolean = False, Optional IncludeMean As Boolean = True,
+                          Optional ByVal IncludeRange As Boolean = False, Optional ByVal IncludeDensity As Boolean = False,
+                          Optional ByVal InterIterationComparisonMethod As InterIterationComparisonMethods = InterIterationComparisonMethods.AllBetter)
 
         'Limiting Count to the available items in each list
         If SourceList.Count < Count Then Count = SourceList.Count
@@ -210,21 +218,36 @@
             Next
 
             'Getting the current iteration statistics (mean and sd ranges)
-            Dim CurrentIterationStatistics = GetStatistics(CurrentResultLists, IncludeSd, False)
+            Dim CurrentIterationStatistics = GetStatistics(CurrentResultLists, IncludeSd, IncludeMean, IncludeRange, IncludeDensity, False)
 
             If BestIterationStatistics Is Nothing Then
                 'Storing the initial iteration results and statistisct
                 Console.WriteLine("Results in iteration: " & iteration + 1 & " Variable ranges: " & String.Join(" ", CurrentIterationStatistics))
-                GetStatistics(CurrentResultLists, IncludeSd, True)
+                GetStatistics(CurrentResultLists, IncludeSd, IncludeMean, IncludeRange, IncludeDensity, True)
                 BestIterationStatistics = CurrentIterationStatistics
                 BestIterationResult = CurrentResultLists
 
             Else
 
-                If AllEqualOrLower(CurrentIterationStatistics.ToArray, BestIterationStatistics.ToArray) = True Then
+                Dim IsBetter As Boolean
+                Select Case InterIterationComparisonMethod
+                    Case InterIterationComparisonMethods.AllBetter
+                        IsBetter = AllEqualOrLower(CurrentIterationStatistics.ToArray, BestIterationStatistics.ToArray)
+
+                    Case InterIterationComparisonMethods.ProportionIsBetter
+                        IsBetter = ProportionIsLower(CurrentIterationStatistics.ToArray, BestIterationStatistics.ToArray, 0.75)
+
+                    Case InterIterationComparisonMethods.BetterOnAverage
+                        IsBetter = BetterOnAverage(CurrentIterationStatistics.ToArray, BestIterationStatistics.ToArray)
+
+                    Case Else
+                        Throw New ArgumentException("Unknown InterIterationComparisonMethod")
+                End Select
+
+                If IsBetter = True Then
                     'Storing the iteration results and statistict only if it is better than the best so far
                     Console.WriteLine("Improved results in iteration: " & iteration + 1 & " Variable ranges: " & String.Join(" ", CurrentIterationStatistics))
-                    GetStatistics(CurrentResultLists, IncludeSd, True)
+                    GetStatistics(CurrentResultLists, IncludeSd, IncludeMean, IncludeRange, IncludeDensity, True)
                     BestIterationStatistics = CurrentIterationStatistics
                     BestIterationResult = CurrentResultLists
                 End If
@@ -238,7 +261,9 @@
 
     End Sub
 
-    Public Sub AssignToBlocks(ByVal BlockCount As Integer, Optional IncludeSd As Boolean = True, Optional ByVal Iterations As Integer = 10000, Optional ByVal Seed As Integer = 42)
+    Public Sub AssignToBlocks(ByVal BlockCount As Integer, Optional IncludeSd As Boolean = True, Optional ByVal Iterations As Integer = 10000, Optional ByVal Seed As Integer = 42,
+                              Optional ByVal IncludeMean As Boolean = True, Optional ByVal IncludeRange As Boolean = False, Optional ByVal IncludeDensity As Boolean = False,
+                              Optional ByVal InterIterationComparisonMethod As InterIterationComparisonMethods = InterIterationComparisonMethods.AllBetter)
 
         For Each ResultList In FinalResultLists
 
@@ -306,21 +331,36 @@
             SampleBlockOrders(BlockCount, CurrentSeed)
 
             'Getting the current iteration statistics (mean and sd ranges)
-            Dim CurrentIterationStatistics = GetStatistics(FinalResultLists, IncludeSd, False, False, True)
+            Dim CurrentIterationStatistics = GetStatistics(FinalResultLists, IncludeSd, IncludeMean, IncludeRange, IncludeDensity, False, False, True)
 
             If BestIterationStatistics Is Nothing Then
                 'Storing the initial iteration results and statistisct
                 Console.WriteLine("Results in iteration: " & Iteration + 1 & " Variable ranges: " & String.Join(" ", CurrentIterationStatistics))
-                GetStatistics(FinalResultLists, IncludeSd, True, False, True)
+                GetStatistics(FinalResultLists, IncludeSd, IncludeMean, IncludeRange, IncludeDensity, False, False, True)
                 BestIterationStatistics = CurrentIterationStatistics
                 BestIterationSeed = CurrentSeed
 
             Else
 
-                If AllEqualOrLower(CurrentIterationStatistics.ToArray, BestIterationStatistics.ToArray) = True Then
+                Dim IsBetter As Boolean
+                Select Case InterIterationComparisonMethod
+                    Case InterIterationComparisonMethods.AllBetter
+                        IsBetter = AllEqualOrLower(CurrentIterationStatistics.ToArray, BestIterationStatistics.ToArray)
+
+                    Case InterIterationComparisonMethods.ProportionIsBetter
+                        IsBetter = ProportionIsLower(CurrentIterationStatistics.ToArray, BestIterationStatistics.ToArray)
+
+                    Case InterIterationComparisonMethods.BetterOnAverage
+                        IsBetter = BetterOnAverage(CurrentIterationStatistics.ToArray, BestIterationStatistics.ToArray)
+
+                    Case Else
+                        Throw New ArgumentException("Unknown InterIterationComparisonMethod")
+                End Select
+
+                If IsBetter = True Then
                     'Storing the iteration results and statistict only if it is better than the best so far
                     Console.WriteLine("Improved results in iteration: " & Iteration + 1 & " Variable ranges: " & String.Join(" ", CurrentIterationStatistics))
-                    GetStatistics(FinalResultLists, IncludeSd, True, False, True)
+                    GetStatistics(FinalResultLists, IncludeSd, IncludeMean, IncludeRange, IncludeDensity, False, False, True)
                     BestIterationStatistics = CurrentIterationStatistics
                     BestIterationSeed = CurrentSeed
                 End If
@@ -475,11 +515,13 @@
 
     End Function
 
-    Public Function GetStatistics(ByRef ResultLists As SortedList(Of Integer, List(Of MatchItem)), ByVal IncludeSd As Boolean, Optional ByVal WriteToConsole As Boolean = False,
-                                  Optional CompareLists As Boolean = True, Optional CompareBlocks As Boolean = False) As List(Of Double)
+    Public Function GetStatistics(ByRef ResultLists As SortedList(Of Integer, List(Of MatchItem)), ByVal IncludeSd As Boolean, ByVal IncludeMean As Boolean, ByVal IncludeRange As Boolean, ByVal IncludeDensity As Boolean,
+                                  Optional ByVal WriteToConsole As Boolean = False, Optional CompareLists As Boolean = True, Optional CompareBlocks As Boolean = False) As List(Of Double)
 
         Dim VariableMeanList As New SortedList(Of String, List(Of Double))
         Dim VariableSdList As New SortedList(Of String, List(Of Double))
+        Dim VariableRangeList As New SortedList(Of String, List(Of Double))
+        Dim VariableDensityList As New SortedList(Of String, List(Of Double))
 
         If CompareLists = True Then
             For Each ResultList In ResultLists
@@ -493,19 +535,30 @@
                     Next
                 Next
 
-                'Calculating mean and sd for each variable and storing them in VariableMeanList and VariableSdList, one index for each ResultList
+                'Calculating mean, sd, range, etc for each variable and storing them in VariableMeanList and VariableSdList, one index for each ResultList
                 For Each Variable In VariableValueList
 
                     Dim VariableKey = Variable.Key & "_L"
 
                     If VariableMeanList.ContainsKey(VariableKey) = False Then VariableMeanList.Add(VariableKey, New List(Of Double))
                     If VariableSdList.ContainsKey(VariableKey) = False Then VariableSdList.Add(VariableKey, New List(Of Double))
+                    If VariableRangeList.ContainsKey(VariableKey) = False Then VariableRangeList.Add(VariableKey, New List(Of Double))
 
                     VariableMeanList(VariableKey).Add(Variable.Value.Average)
 
                     Dim StandardDeviation As Double
                     CoefficientOfVariation(Variable.Value, ,,,, StandardDeviation, StandardDeviationTypes.Sample)
                     VariableSdList(VariableKey).Add(StandardDeviation)
+
+                    VariableRangeList(VariableKey).Add(Variable.Value.Max - Variable.Value.Min)
+
+                    Dim CumulativeValueSum = Variable.Value.Sum
+                    For p = 0 To Variable.Value.Count - 1
+                        Dim VariableKey_CumDist = VariableKey & p.ToString("000")
+                        If VariableDensityList.ContainsKey(VariableKey_CumDist) = False Then VariableDensityList.Add(VariableKey_CumDist, New List(Of Double))
+                        VariableDensityList(VariableKey_CumDist).Add(Variable.Value(p) / CumulativeValueSum)
+                    Next
+
                 Next
 
             Next
@@ -546,60 +599,85 @@
 
                     If VariableMeanList.ContainsKey(VariableKey) = False Then VariableMeanList.Add(VariableKey, New List(Of Double))
                     If VariableSdList.ContainsKey(VariableKey) = False Then VariableSdList.Add(VariableKey, New List(Of Double))
+                    If VariableRangeList.ContainsKey(VariableKey) = False Then VariableRangeList.Add(VariableKey, New List(Of Double))
 
                     VariableMeanList(VariableKey).Add(Variable.Value.Average)
 
                     Dim StandardDeviation As Double
-                        CoefficientOfVariation(Variable.Value, ,,,, StandardDeviation, StandardDeviationTypes.Sample)
+                    CoefficientOfVariation(Variable.Value, ,,,, StandardDeviation, StandardDeviationTypes.Sample)
                     VariableSdList(VariableKey).Add(StandardDeviation)
+
+                    VariableRangeList(VariableKey).Add(Variable.Value.Max - Variable.Value.Min)
+
+                    Dim CumulativeValueSum = Variable.Value.Sum
+                    For p = 0 To Variable.Value.Count - 1
+                        Dim VariableKey_CumDist = VariableKey & p.ToString("000")
+                        If VariableDensityList.ContainsKey(VariableKey_CumDist) = False Then VariableDensityList.Add(VariableKey_CumDist, New List(Of Double))
+                        VariableDensityList(VariableKey_CumDist).Add(Variable.Value(p) / CumulativeValueSum)
+                    Next
+
                 Next
-                Next
+            Next
 
         End If
 
         If WriteToConsole = True Then
-            For Each Variable In VariableMeanList
-                Console.WriteLine("     " & Variable.Key & ", mean values: " & String.Join("; ", Variable.Value))
-            Next
-            For Each Variable In VariableSdList
-                Console.WriteLine("     " & Variable.Key & ", sd values: " & String.Join("; ", Variable.Value))
-            Next
+            If IncludeMean = True Then
+                For Each Variable In VariableMeanList
+                    Console.WriteLine("     " & Variable.Key & ", mean values: " & String.Join("; ", Variable.Value))
+                Next
+            End If
+            If IncludeSd = True Then
+                For Each Variable In VariableSdList
+                    Console.WriteLine("     " & Variable.Key & ", sd values: " & String.Join("; ", Variable.Value))
+                Next
+            End If
+            If IncludeRange = True Then
+                For Each Variable In VariableRangeList
+                    Console.WriteLine("     " & Variable.Key & ", range values: " & String.Join("; ", Variable.Value))
+                Next
+            End If
+            If IncludeDensity = True Then
+                For Each Variable In VariableDensityList
+                    Console.WriteLine("     " & Variable.Key & ", cumulative distribution values: " & String.Join("; ", Variable.Value))
+                Next
+            End If
         End If
 
         Dim OutputList As New List(Of Double)
 
-        Dim ComparisonMethod As Integer = 2
+        If IncludeMean = True Then
+            For Each Variable In VariableMeanList
+                Dim Variance As Double
+                CoefficientOfVariation(Variable.Value,,,, Variance, , StandardDeviationTypes.Population)
+                OutputList.Add(Variance)
+            Next
+        End If
 
-        Select Case ComparisonMethod
-            Case 1
+        If IncludeSd = True Then
+            For Each Variable In VariableSdList
+                Dim Variance As Double
+                CoefficientOfVariation(Variable.Value,,,, Variance, , StandardDeviationTypes.Population)
+                OutputList.Add(Variance)
+            Next
+        End If
 
-                For Each Variable In VariableMeanList
-                    OutputList.Add(Math.Abs(Variable.Value.Max - Variable.Value.Min))
-                Next
-                For Each Variable In VariableSdList
-                    If IncludeSd = True Then OutputList.Add(Math.Abs(Variable.Value.Max - Variable.Value.Min))
-                Next
+        If IncludeRange = True Then
+            For Each Variable In VariableRangeList
+                Dim Variance As Double
+                CoefficientOfVariation(Variable.Value,,,, Variance, , StandardDeviationTypes.Population)
+                OutputList.Add(Variance)
+            Next
+        End If
 
-            Case 2
+        If IncludeDensity = True Then
+            For Each Variable In VariableDensityList
+                Dim Variance As Double
+                CoefficientOfVariation(Variable.Value,,,, Variance, , StandardDeviationTypes.Population)
+                OutputList.Add(Variance)
+            Next
 
-                For Each Variable In VariableMeanList
-                    Dim Variance As Double
-                    CoefficientOfVariation(Variable.Value,,,, Variance, , StandardDeviationTypes.Population)
-                    OutputList.Add(Variance)
-                Next
-
-                For Each Variable In VariableSdList
-                    If IncludeSd = True Then
-                        Dim Variance As Double
-                        CoefficientOfVariation(Variable.Value,,,, Variance, , StandardDeviationTypes.Population)
-                        OutputList.Add(Variance)
-                    End If
-                Next
-
-            Case Else
-                Throw New NotImplementedException("Unknown comparison method")
-
-        End Select
+        End If
 
         Return OutputList
 
@@ -639,6 +717,36 @@
         Next
 
         Return True
+
+    End Function
+
+
+
+    Public Function ProportionIsLower(ByVal Array1() As Double, ByVal Array2() As Double, Optional ByVal Proportion As Double = 0.5) As Boolean
+
+        If Array1.Length <> Array2.Length Then Throw New ArgumentException("Array1 and Array2 must have the same length!")
+
+        Dim LowerCount As Integer = 0
+        For i = 0 To Array1.Length - 1
+            If Array1(i) < Array2(i) Then LowerCount += 1
+        Next
+
+        If LowerCount > Proportion * Array1.Length Then
+            Return True
+        Else
+            Return False
+        End If
+
+    End Function
+
+
+    Public Function BetterOnAverage(ByVal Array1() As Double, ByVal Array2() As Double) As Boolean
+
+        If Array1.Average < Array2.Average Then
+            Return True
+        Else
+            Return False
+        End If
 
     End Function
 

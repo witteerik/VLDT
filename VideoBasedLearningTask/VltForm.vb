@@ -72,12 +72,25 @@ Public Class VltForm
     Private Sub Button2_Click(sender As Object, e As EventArgs) Handles Button2.Click
 
         'Temprarily high-jacking this app to run calculation of FindMatches
+        Dim ProcessStep = 2
 
-        Dim FindMatches = New VLDT_lib.FindMatches(43)
-        FindMatches.Feed("C:\EriksDokument\RStudioProjects\SSMS\Final_Selection\Step 8 - BlockAssignment\FindMatchedAlgorithmInput.txt")
-        FindMatches.MatchLists(100, 50000, False)
-        FindMatches.AssignToBlocks(10, False, 50000)
-        FindMatches.SaveResults("C:\EriksDokument\RStudioProjects\SSMS\Final_Selection\Step 8 - BlockAssignment\FindMatchesOutput_100.txt")
+        Select Case ProcessStep
+            Case 1
+
+                Dim FindMatches = New VLDT_lib.FindMatches(43)
+                FindMatches.Feed("C:\EriksDokument\RStudioProjects\SSMS\Final_Selection\Step 8 - BlockAssignment\FindMatchedAlgorithmInput.txt")
+                FindMatches.MatchLists(100, 50000, False)
+                FindMatches.AssignToBlocks(10, False, 50000)
+                FindMatches.SaveResults("C:\EriksDokument\RStudioProjects\SSMS\Final_Selection\Step 8 - BlockAssignment\FindMatchesOutput_100.txt")
+
+            Case 2
+
+                Dim FindMatches = New VLDT_lib.FindMatches(43)
+                FindMatches.Feed("C:\EriksDokument\RStudioProjects\SSMS\Final_Selection\Step 9 - Selection of candidate stimuli for pilot 2\FindMatchesInput.txt")
+                FindMatches.MatchLists(15, 1000000, False, False, False, True, FindMatches.InterIterationComparisonMethods.BetterOnAverage)
+                FindMatches.SaveResults("C:\EriksDokument\RStudioProjects\SSMS\Final_Selection\Step 9 - Selection of candidate stimuli for pilot 2\FindMatchesOutput.txt")
+
+        End Select
 
     End Sub
 End Class

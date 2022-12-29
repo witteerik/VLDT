@@ -180,20 +180,20 @@
             End If
 
             For Each TestItem In Block.RealItems
-                ExportList.Add(TestItem.ToString(IncludeHeadings))
+                ExportList.Add(TestItem.ToString(IncludeHeadings, ParticipantID, ParticipantNumber))
                 'Setting IncludeHeadings to False in order to only get headings on the first line
                 IncludeHeadings = False
             Next
 
             For Each TestItem In Block.PseudoItems
-                ExportList.Add(TestItem.ToString(IncludeHeadings))
+                ExportList.Add(TestItem.ToString(IncludeHeadings, ParticipantID, ParticipantNumber))
                 'Setting IncludeHeadings to False in order to only get headings on the first line
                 IncludeHeadings = False
             Next
 
         Next
 
-        Utils.SendInfoToLog(String.Join(vbCrLf, ExportList), FileName, OutputFolder)
+        Utils.SendInfoToLog(String.Join(vbCrLf, ExportList), FileName, OutputFolder, True)
 
     End Sub
 

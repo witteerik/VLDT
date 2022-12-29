@@ -532,7 +532,7 @@ Public Class LdtForm
                 End If
 
                 'Exporting data
-                Utils.SendInfoToLog(CurrentItem.ToString(False), TrialExportFileName, IO.Path.Combine(TestResultExportFolder, ParticipantID & "_" & ParticipantNumber.ToString("000") & "_TestTrialExport"), True, True)
+                Utils.SendInfoToLog(CurrentItem.ToString(False, ParticipantID, ParticipantNumber), TrialExportFileName, IO.Path.Combine(TestResultExportFolder, ParticipantID & "_" & ParticipantNumber.ToString("000") & "_TestTrialExport"), True, True)
             End If
         End If
 

@@ -83,6 +83,8 @@ Public Class ParticipantDialog
 
         SkipBlocks_CheckBox.Checked = False
 
+        SkipBlocks = Nothing
+
     End Sub
 
     Private Sub SkipBlocks_CheckBox_CheckedChanged(sender As Object, e As EventArgs) Handles SkipBlocks_CheckBox.CheckedChanged

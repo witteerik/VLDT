@@ -126,6 +126,9 @@ Public Class TestItem
     Public Shared Function GetExportHeadings() As String
         Dim HeadingList As New List(Of String)
 
+        HeadingList.Add("ParticipantID")
+        HeadingList.Add("ParticipantNumber")
+
         HeadingList.Add("IsPractiseTestBlock")
         HeadingList.Add("ItemNumber")
         HeadingList.Add("WithinTest_TrialPresentationOrder")
@@ -152,7 +155,7 @@ Public Class TestItem
 
     End Function
 
-    Public Shadows Function ToString(ByVal IncludeHeading As Boolean) As String
+    Public Shadows Function ToString(ByVal IncludeHeading As Boolean, ByVal ParticipantID As String, ByVal ParticipantNumber As Integer) As String
 
         Dim OutputList As New List(Of String)
 
@@ -161,6 +164,9 @@ Public Class TestItem
         End If
 
         Dim DataList As New List(Of String)
+
+        DataList.Add(ParticipantID)
+        DataList.Add(ParticipantNumber)
 
         DataList.Add(ParentBlock.ParentTestMaterial.IsPractiseTestMaterial.ToString)
         DataList.Add(ItemNumber.ToString)

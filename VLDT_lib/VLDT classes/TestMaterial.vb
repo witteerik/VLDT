@@ -81,6 +81,10 @@
             CurrentBlockOrderIndex = 0
         End If
 
+        If CurrentBlockOrderIndex > Me.Count - 1 Then
+            Return New NextTrialResult With {.NextEventType = NextEventTypes.EndOfTest}
+        End If
+
         'Checking if there are any remaining items to present
         Dim UnpresentedItems = Me(BlockOrder(CurrentBlockOrderIndex)).GetUnpresentedItems
         If UnpresentedItems.Count = 0 Then
@@ -167,6 +171,9 @@
         Dim IncludeHeadings As Boolean = True
         For Each Block In Me
 
+            'Skips to next block if the current block is skipped
+            If Block.SkippedBlock = True Then Continue For
+
             If SelectedBlocks IsNot Nothing Then
                 'Skips to next block if the block number is not in the SelectBlocks List
                 If SelectedBlocks.Contains(Block.BlockNumber) = False Then Continue For
@@ -240,6 +247,27 @@
         End If
 
     End Function
+
+    'Skips the indicated number of blocks.
+    Public Sub SkipBlocks(ByVal SkipNumberOfBlocks As Integer)
+
+        SkipNumberOfBlocks = Math.Min(Me.BlockOrder.Count, SkipNumberOfBlocks)
+
+        If CurrentBlockOrderIndex Is Nothing Then
+            CurrentBlockOrderIndex = 0
+        End If
+
+        'Moves 
+        For i = 1 To SkipNumberOfBlocks
+            Try
+                Me(BlockOrder(CurrentBlockOrderIndex)).SkippedBlock = True
+                CurrentBlockOrderIndex += 1
+            Catch ex As Exception
+                ' Ignores any error here, as may result from being called with too high values of SkipNumberOfBlocks
+            End Try
+        Next
+
+    End Sub
 
     ''' <summary>
     ''' Clears all test results in the current instance of TestMaterial and prepares the TestMaterial to be run again (useful to redo the practise test)

@@ -16,6 +16,8 @@ Namespace Utils
             AppPtcTitle
             AppPtcID
             AppPtcNr
+            AppSkipBlocksCk
+            AppSkipBlocksNr
             AppPtcOK
             PractiseTitle
             PractiseText1

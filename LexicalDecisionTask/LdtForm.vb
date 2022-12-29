@@ -22,6 +22,11 @@ Public Class LdtForm
     Private ParticipantID As String = ""
 
     ''' <summary>
+    ''' If given a value, the practise test is skipped and also the given number of consecutive blocks in the main test.
+    ''' </summary>
+    Private SkipNumberOfBlocks As Integer?
+
+    ''' <summary>
     ''' A non-zero positive integer representing the sequential order in which the current participant is tested withing the entire data collection. (Is used to keep track of block orders)
     ''' </summary>
     Private ParticipantNumber As Integer
@@ -173,12 +178,13 @@ Public Class LdtForm
         End If
 
         ' Getting the participant ID (and number, if response keys and the order of blocks and should be counter balanced)
-        Dim ParticipantDialog As New ParticipantDialog
+        Dim ParticipantDialog As New ParticipantDialog(True)
         ParticipantDialog.ShowDialog()
 
         If ParticipantDialog.DialogResult = DialogResult.OK Then
             ParticipantNumber = ParticipantDialog.ParticipantNumber
             ParticipantID = ParticipantDialog.ParticipantID
+            SkipNumberOfBlocks = ParticipantDialog.SkipBlocks
         Else
             ShutDownTimer.Start()
             Exit Sub
@@ -263,7 +269,30 @@ Public Class LdtForm
         Block_ProgressBar.Value = 0
 
         'Run Practise test
-        RunPraciseTest()
+        If SkipNumberOfBlocks.HasValue = False Then
+            RunPraciseTest()
+        Else
+
+            ActiveTestMaterial = SharpTestMaterial
+
+            'Skips the indicated number of blocks
+            SharpTestMaterial.SkipBlocks(SkipNumberOfBlocks)
+
+            'Moves the progressbar
+            For n = 1 To SkipNumberOfBlocks
+                Block_ProgressBar.ShowProgressText = True
+                Block_ProgressBar.PerformStep()
+            Next
+
+            If SkipNumberOfBlocks >= ActiveTestMaterial.CompletedBlocks Then
+                'Test is completed
+                TestIsComplete_ThreadSafe()
+            Else
+                'And runs the sharp test
+                RunSharpTest()
+            End If
+
+        End If
 
     End Sub
 

@@ -1,6 +1,6 @@
 ﻿
 Public Class Block
-
+    Public Property SkippedBlock As Boolean = False
     Public Property ParentTestMaterial As TestMaterial
     Public Property BlockNumber As Integer
     Public Property RealItems As List(Of TestItem)

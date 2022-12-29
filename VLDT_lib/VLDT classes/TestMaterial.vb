@@ -124,6 +124,21 @@
 
     End Function
 
+    ''' <summary>
+    ''' Returns the number of presented items in the current block
+    ''' </summary>
+    ''' <returns></returns>
+    Public Function PresentedItemsInCurrentBlock() As Integer
+
+        If CurrentBlockOrderIndex Is Nothing Then
+            CurrentBlockOrderIndex = 0
+        End If
+
+        Return Me(BlockOrder(CurrentBlockOrderIndex)).PresentedItems
+
+    End Function
+
+
     Public Sub DisposeVideos()
 
         For Each Block In Me

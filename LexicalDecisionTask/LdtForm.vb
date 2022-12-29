@@ -65,7 +65,6 @@ Public Class LdtForm
 
     Private Sub LdtForm_Load(sender As Object, e As EventArgs) Handles MyBase.Load
 
-
         Try
 
             'https://wiki.videolan.org/VLC_command-line_help/
@@ -102,6 +101,7 @@ Public Class LdtForm
             'Ignores any error here
         End Try
 
+        AddHandler MyBase.KeyDown, AddressOf LdtForm_KeyDown
 
         InitiateAppTimer.Start()
 
@@ -348,13 +348,13 @@ Public Class LdtForm
 
         SetGuiMode_ThreadSafe(GuiModes.Info)
 
-        WaitingToStartBlock = True
-
-        ActivateKeyDownHandler()
-
         Instructions_Label.Text = Utils.GetGuiString(Utils.GuiStrings.VldtGuiStringKeys.StartBySpace)
 
         Info_RichTextBox.LoadFile(IO.Path.Combine(CurrentTestSpecification.GetBlockParentFolder(), "Info.rtf"))
+
+        WaitingToStartBlock = True
+
+        ActivateKeyDownHandler()
 
     End Sub
 
@@ -364,11 +364,11 @@ Public Class LdtForm
 
         SetGuiMode_ThreadSafe(GuiModes.Info)
 
+        Instructions_Label.Text = Utils.GetGuiString(Utils.GuiStrings.VldtGuiStringKeys.StartBySpace)
+
         WaitingToStartBlock = True
 
         ActivateKeyDownHandler()
-
-        Instructions_Label.Text = Utils.GetGuiString(Utils.GuiStrings.VldtGuiStringKeys.StartBySpace)
 
     End Sub
 
@@ -393,11 +393,15 @@ Public Class LdtForm
             'Check if the user seemed to understand the task
             Dim PractiseScore = ActiveTestMaterial.GetProportionCorrect
 
-            If PractiseScore < CurrentTestSpecification.PractiseScoreLimit Then
+            If PractiseScore < (CurrentTestSpecification.PractiseScoreLimit / 100) Then
+
+                'Anything else means redo practise test
+                ActiveTestMaterial.ClearResults()
 
                 Dim PractiseScoreDialog As New PractiseScoreDialog
                 PractiseScoreDialog.SetScore(PractiseScore)
-                PractiseScoreDialog.ShowDialog(Me)
+                'PractiseScoreDialog.ShowDialog(Me)
+                PractiseScoreDialog.ShowDialog()
 
                 If PractiseScoreDialog.DialogResult = DialogResult.OK Then
                     'OK means skip to sharp test
@@ -475,7 +479,7 @@ Public Class LdtForm
         'And resets the TimedResponseStopWatch
         TimedResponseStopWatch.Reset()
 
-        If ActiveTestMaterial.PresentedItems = 0 Then
+        If ActiveTestMaterial.PresentedItemsInCurrentBlock = 0 Then
             'Sets the GUI mode to Test, only at the first trial
             SetGuiMode_ThreadSafe(GuiModes.Test)
         End If
@@ -679,12 +683,22 @@ Public Class LdtForm
 
     End Sub
 
+    Dim AcceptKeyEvent As Boolean = False
+
     Private Sub ActivateKeyDownHandler()
-        AddHandler MyBase.KeyDown, AddressOf LdtForm_KeyDown
+
+        AcceptKeyEvent = True
+
+        'Console.WriteLine("On")
+        'AddHandler MyBase.KeyDown, AddressOf LdtForm_KeyDown
     End Sub
 
     Private Sub InactivateKeyDownHandler()
-        RemoveHandler MyBase.KeyDown, AddressOf LdtForm_KeyDown
+
+        AcceptKeyEvent = False
+
+        'Console.WriteLine("Off")
+        'RemoveHandler MyBase.KeyDown, AddressOf LdtForm_KeyDown
     End Sub
 
     ''' <summary>
@@ -693,6 +707,13 @@ Public Class LdtForm
     ''' <param name="sender"></param>
     ''' <param name="e"></param>
     Private Sub LdtForm_KeyDown(sender As Object, e As KeyEventArgs)
+
+        If AcceptKeyEvent = False Then
+            e.SuppressKeyPress = True
+            Exit Sub
+        End If
+
+        'Console.WriteLine(e.KeyCode)
 
         If WaitingToStartBlock = True Then
 
@@ -711,19 +732,19 @@ Public Class LdtForm
                 Case RealKey
 
                     'Noting a correct response
-                    IssueResponse_ThreadSafe(Response.Real, e.KeyCode, DateTime.Now)
+                    IssueResponse_ThreadSafe(Response.Real, RealKey, DateTime.Now)
 
                 Case PseudoKey
 
                     'Noting an incorrect response
-                    IssueResponse_ThreadSafe(Response.Pseudo, e.KeyCode, DateTime.Now)
+                    IssueResponse_ThreadSafe(Response.Pseudo, PseudoKey, DateTime.Now)
 
             End Select
 
         End If
 
         'Ignores any other key downs and sets Handled to True
-        e.Handled = True
+        e.SuppressKeyPress = True
 
     End Sub
 

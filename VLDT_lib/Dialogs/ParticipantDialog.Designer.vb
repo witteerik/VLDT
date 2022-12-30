@@ -28,11 +28,11 @@ Partial Class ParticipantDialog
         Me.ParticipantNr_Label = New System.Windows.Forms.Label()
         Me.Participant_ID_TextBox = New System.Windows.Forms.TextBox()
         Me.TableLayoutPanel1 = New System.Windows.Forms.TableLayoutPanel()
+        Me.Participant_Nr_IntegerParsingTextBox = New VLDT_lib.IntegerParsingTextBox()
         Me.SkipBlocks_CheckBox = New System.Windows.Forms.CheckBox()
         Me.SkipBlock_TableLayoutPanel = New System.Windows.Forms.TableLayoutPanel()
         Me.SkipBlock_Label = New System.Windows.Forms.Label()
         Me.SkipBlockCounts_ComboBox = New System.Windows.Forms.ComboBox()
-        Me.Participant_Nr_IntegerParsingTextBox = New VLDT_lib.IntegerParsingTextBox()
         Me.TableLayoutPanel1.SuspendLayout()
         Me.SkipBlock_TableLayoutPanel.SuspendLayout()
         Me.SuspendLayout()
@@ -43,9 +43,9 @@ Partial Class ParticipantDialog
         Me.OK_Button.Dock = System.Windows.Forms.DockStyle.Fill
         Me.OK_Button.Enabled = False
         Me.OK_Button.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.OK_Button.Location = New System.Drawing.Point(3, 136)
+        Me.OK_Button.Location = New System.Drawing.Point(3, 139)
         Me.OK_Button.Name = "OK_Button"
-        Me.OK_Button.Size = New System.Drawing.Size(633, 37)
+        Me.OK_Button.Size = New System.Drawing.Size(633, 34)
         Me.OK_Button.TabIndex = 0
         Me.OK_Button.Text = "Continue"
         '
@@ -55,7 +55,7 @@ Partial Class ParticipantDialog
         Me.ParticipantID_Label.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.ParticipantID_Label.Location = New System.Drawing.Point(3, 20)
         Me.ParticipantID_Label.Name = "ParticipantID_Label"
-        Me.ParticipantID_Label.Size = New System.Drawing.Size(167, 31)
+        Me.ParticipantID_Label.Size = New System.Drawing.Size(167, 32)
         Me.ParticipantID_Label.TabIndex = 1
         Me.ParticipantID_Label.Text = "Participant ID:"
         Me.ParticipantID_Label.TextAlign = System.Drawing.ContentAlignment.MiddleRight
@@ -64,9 +64,9 @@ Partial Class ParticipantDialog
         '
         Me.ParticipantNr_Label.Dock = System.Windows.Forms.DockStyle.Fill
         Me.ParticipantNr_Label.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.ParticipantNr_Label.Location = New System.Drawing.Point(3, 51)
+        Me.ParticipantNr_Label.Location = New System.Drawing.Point(3, 52)
         Me.ParticipantNr_Label.Name = "ParticipantNr_Label"
-        Me.ParticipantNr_Label.Size = New System.Drawing.Size(167, 31)
+        Me.ParticipantNr_Label.Size = New System.Drawing.Size(167, 32)
         Me.ParticipantNr_Label.TabIndex = 2
         Me.ParticipantNr_Label.Text = "Participant number:"
         Me.ParticipantNr_Label.TextAlign = System.Drawing.ContentAlignment.MiddleRight
@@ -106,14 +106,25 @@ Partial Class ParticipantDialog
         Me.TableLayoutPanel1.Size = New System.Drawing.Size(639, 176)
         Me.TableLayoutPanel1.TabIndex = 5
         '
+        'Participant_Nr_IntegerParsingTextBox
+        '
+        Me.Participant_Nr_IntegerParsingTextBox.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.Participant_Nr_IntegerParsingTextBox.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Participant_Nr_IntegerParsingTextBox.ForeColor = System.Drawing.Color.Red
+        Me.Participant_Nr_IntegerParsingTextBox.Location = New System.Drawing.Point(176, 55)
+        Me.Participant_Nr_IntegerParsingTextBox.Name = "Participant_Nr_IntegerParsingTextBox"
+        Me.Participant_Nr_IntegerParsingTextBox.Size = New System.Drawing.Size(460, 26)
+        Me.Participant_Nr_IntegerParsingTextBox.TabIndex = 4
+        Me.Participant_Nr_IntegerParsingTextBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center
+        '
         'SkipBlocks_CheckBox
         '
         Me.SkipBlocks_CheckBox.CheckAlign = System.Drawing.ContentAlignment.MiddleRight
         Me.SkipBlocks_CheckBox.Dock = System.Windows.Forms.DockStyle.Fill
         Me.SkipBlocks_CheckBox.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.SkipBlocks_CheckBox.Location = New System.Drawing.Point(3, 85)
+        Me.SkipBlocks_CheckBox.Location = New System.Drawing.Point(3, 87)
         Me.SkipBlocks_CheckBox.Name = "SkipBlocks_CheckBox"
-        Me.SkipBlocks_CheckBox.Size = New System.Drawing.Size(167, 25)
+        Me.SkipBlocks_CheckBox.Size = New System.Drawing.Size(167, 26)
         Me.SkipBlocks_CheckBox.TabIndex = 5
         Me.SkipBlocks_CheckBox.Text = "Skip blocks"
         Me.SkipBlocks_CheckBox.TextAlign = System.Drawing.ContentAlignment.MiddleRight
@@ -127,12 +138,12 @@ Partial Class ParticipantDialog
         Me.SkipBlock_TableLayoutPanel.Controls.Add(Me.SkipBlock_Label, 0, 0)
         Me.SkipBlock_TableLayoutPanel.Controls.Add(Me.SkipBlockCounts_ComboBox, 1, 0)
         Me.SkipBlock_TableLayoutPanel.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.SkipBlock_TableLayoutPanel.Location = New System.Drawing.Point(173, 82)
+        Me.SkipBlock_TableLayoutPanel.Location = New System.Drawing.Point(173, 84)
         Me.SkipBlock_TableLayoutPanel.Margin = New System.Windows.Forms.Padding(0)
         Me.SkipBlock_TableLayoutPanel.Name = "SkipBlock_TableLayoutPanel"
         Me.SkipBlock_TableLayoutPanel.RowCount = 1
         Me.SkipBlock_TableLayoutPanel.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100.0!))
-        Me.SkipBlock_TableLayoutPanel.Size = New System.Drawing.Size(466, 31)
+        Me.SkipBlock_TableLayoutPanel.Size = New System.Drawing.Size(466, 32)
         Me.SkipBlock_TableLayoutPanel.TabIndex = 6
         Me.SkipBlock_TableLayoutPanel.Visible = False
         '
@@ -142,7 +153,7 @@ Partial Class ParticipantDialog
         Me.SkipBlock_Label.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.SkipBlock_Label.Location = New System.Drawing.Point(3, 0)
         Me.SkipBlock_Label.Name = "SkipBlock_Label"
-        Me.SkipBlock_Label.Size = New System.Drawing.Size(372, 31)
+        Me.SkipBlock_Label.Size = New System.Drawing.Size(372, 32)
         Me.SkipBlock_Label.TabIndex = 0
         Me.SkipBlock_Label.Text = "Select number of blocks to skip:"
         Me.SkipBlock_Label.TextAlign = System.Drawing.ContentAlignment.MiddleRight
@@ -156,17 +167,6 @@ Partial Class ParticipantDialog
         Me.SkipBlockCounts_ComboBox.Name = "SkipBlockCounts_ComboBox"
         Me.SkipBlockCounts_ComboBox.Size = New System.Drawing.Size(82, 24)
         Me.SkipBlockCounts_ComboBox.TabIndex = 1
-        '
-        'Participant_Nr_IntegerParsingTextBox
-        '
-        Me.Participant_Nr_IntegerParsingTextBox.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.Participant_Nr_IntegerParsingTextBox.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Participant_Nr_IntegerParsingTextBox.ForeColor = System.Drawing.Color.Red
-        Me.Participant_Nr_IntegerParsingTextBox.Location = New System.Drawing.Point(176, 54)
-        Me.Participant_Nr_IntegerParsingTextBox.Name = "Participant_Nr_IntegerParsingTextBox"
-        Me.Participant_Nr_IntegerParsingTextBox.Size = New System.Drawing.Size(460, 26)
-        Me.Participant_Nr_IntegerParsingTextBox.TabIndex = 4
-        Me.Participant_Nr_IntegerParsingTextBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center
         '
         'ParticipantDialog
         '

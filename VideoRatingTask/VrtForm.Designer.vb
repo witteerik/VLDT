@@ -25,16 +25,16 @@ Partial Class VrtForm
         Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(VrtForm))
         Me.MainTableLayoutPanel = New System.Windows.Forms.TableLayoutPanel()
         Me.TableLayoutPanel1 = New System.Windows.Forms.TableLayoutPanel()
-        Me.Content_SplitContainer = New System.Windows.Forms.SplitContainer()
-        Me.VideoViewHolder_Panel = New System.Windows.Forms.Panel()
-        Me.VideoView = New LibVLCSharp.WinForms.VideoView()
-        Me.Replay_Button = New System.Windows.Forms.Button()
-        Me.ChangeView_Button = New System.Windows.Forms.Button()
         Me.ShowPreviousItem_Button = New VLDT_lib.ChangeItemButton()
         Me.ShowNextItem_Button = New VLDT_lib.ChangeItemButton()
         Me.ShowNextNonCompleteItem_Button = New VLDT_lib.ChangeItemButton()
         Me.Item_ProgressBar = New VLDT_lib.ProgressBarWithText()
+        Me.Content_SplitContainer = New System.Windows.Forms.SplitContainer()
+        Me.VideoViewHolder_Panel = New System.Windows.Forms.Panel()
+        Me.VideoView = New LibVLCSharp.WinForms.VideoView()
         Me.RatingPanel = New VLDT_lib.RatingPanel()
+        Me.Replay_Button = New System.Windows.Forms.Button()
+        Me.ChangeView_Button = New System.Windows.Forms.Button()
         Me.MainTableLayoutPanel.SuspendLayout()
         Me.TableLayoutPanel1.SuspendLayout()
         CType(Me.Content_SplitContainer, System.ComponentModel.ISupportInitialize).BeginInit()
@@ -85,67 +85,6 @@ Partial Class VrtForm
         Me.TableLayoutPanel1.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50.0!))
         Me.TableLayoutPanel1.Size = New System.Drawing.Size(112, 583)
         Me.TableLayoutPanel1.TabIndex = 0
-        '
-        'Content_SplitContainer
-        '
-        Me.Content_SplitContainer.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.Content_SplitContainer.Location = New System.Drawing.Point(115, 3)
-        Me.Content_SplitContainer.Name = "Content_SplitContainer"
-        '
-        'Content_SplitContainer.Panel1
-        '
-        Me.Content_SplitContainer.Panel1.Controls.Add(Me.VideoViewHolder_Panel)
-        '
-        'Content_SplitContainer.Panel2
-        '
-        Me.Content_SplitContainer.Panel2.Controls.Add(Me.RatingPanel)
-        Me.MainTableLayoutPanel.SetRowSpan(Me.Content_SplitContainer, 2)
-        Me.Content_SplitContainer.Size = New System.Drawing.Size(890, 577)
-        Me.Content_SplitContainer.SplitterDistance = 520
-        Me.Content_SplitContainer.TabIndex = 0
-        '
-        'VideoViewHolder_Panel
-        '
-        Me.VideoViewHolder_Panel.BackColor = System.Drawing.Color.Black
-        Me.VideoViewHolder_Panel.Controls.Add(Me.VideoView)
-        Me.VideoViewHolder_Panel.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.VideoViewHolder_Panel.Location = New System.Drawing.Point(0, 0)
-        Me.VideoViewHolder_Panel.Name = "VideoViewHolder_Panel"
-        Me.VideoViewHolder_Panel.Size = New System.Drawing.Size(520, 577)
-        Me.VideoViewHolder_Panel.TabIndex = 8
-        '
-        'VideoView
-        '
-        Me.VideoView.BackColor = System.Drawing.Color.Black
-        Me.VideoView.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.VideoView.Location = New System.Drawing.Point(0, 0)
-        Me.VideoView.Margin = New System.Windows.Forms.Padding(0)
-        Me.VideoView.MediaPlayer = Nothing
-        Me.VideoView.Name = "VideoView"
-        Me.VideoView.Size = New System.Drawing.Size(520, 577)
-        Me.VideoView.TabIndex = 6
-        Me.VideoView.Text = "VideoView1"
-        '
-        'Replay_Button
-        '
-        Me.Replay_Button.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.Replay_Button.Enabled = False
-        Me.Replay_Button.Location = New System.Drawing.Point(3, 3)
-        Me.Replay_Button.Name = "Replay_Button"
-        Me.Replay_Button.Size = New System.Drawing.Size(106, 24)
-        Me.Replay_Button.TabIndex = 3
-        Me.Replay_Button.Text = "Replay"
-        Me.Replay_Button.UseVisualStyleBackColor = True
-        '
-        'ChangeView_Button
-        '
-        Me.ChangeView_Button.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.ChangeView_Button.Location = New System.Drawing.Point(1011, 3)
-        Me.ChangeView_Button.Name = "ChangeView_Button"
-        Me.ChangeView_Button.Size = New System.Drawing.Size(107, 24)
-        Me.ChangeView_Button.TabIndex = 4
-        Me.ChangeView_Button.Text = "Change view"
-        Me.ChangeView_Button.UseVisualStyleBackColor = True
         '
         'ShowPreviousItem_Button
         '
@@ -203,6 +142,46 @@ Partial Class VrtForm
         Me.Item_ProgressBar.TabIndex = 2
         Me.Item_ProgressBar.TextFont = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Bold)
         '
+        'Content_SplitContainer
+        '
+        Me.Content_SplitContainer.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.Content_SplitContainer.Location = New System.Drawing.Point(115, 3)
+        Me.Content_SplitContainer.Name = "Content_SplitContainer"
+        '
+        'Content_SplitContainer.Panel1
+        '
+        Me.Content_SplitContainer.Panel1.Controls.Add(Me.VideoViewHolder_Panel)
+        '
+        'Content_SplitContainer.Panel2
+        '
+        Me.Content_SplitContainer.Panel2.Controls.Add(Me.RatingPanel)
+        Me.MainTableLayoutPanel.SetRowSpan(Me.Content_SplitContainer, 2)
+        Me.Content_SplitContainer.Size = New System.Drawing.Size(890, 577)
+        Me.Content_SplitContainer.SplitterDistance = 520
+        Me.Content_SplitContainer.TabIndex = 0
+        '
+        'VideoViewHolder_Panel
+        '
+        Me.VideoViewHolder_Panel.BackColor = System.Drawing.Color.Black
+        Me.VideoViewHolder_Panel.Controls.Add(Me.VideoView)
+        Me.VideoViewHolder_Panel.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.VideoViewHolder_Panel.Location = New System.Drawing.Point(0, 0)
+        Me.VideoViewHolder_Panel.Name = "VideoViewHolder_Panel"
+        Me.VideoViewHolder_Panel.Size = New System.Drawing.Size(520, 577)
+        Me.VideoViewHolder_Panel.TabIndex = 8
+        '
+        'VideoView
+        '
+        Me.VideoView.BackColor = System.Drawing.Color.Black
+        Me.VideoView.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.VideoView.Location = New System.Drawing.Point(0, 0)
+        Me.VideoView.Margin = New System.Windows.Forms.Padding(0)
+        Me.VideoView.MediaPlayer = Nothing
+        Me.VideoView.Name = "VideoView"
+        Me.VideoView.Size = New System.Drawing.Size(520, 577)
+        Me.VideoView.TabIndex = 6
+        Me.VideoView.Text = "VideoView1"
+        '
         'RatingPanel
         '
         Me.RatingPanel.AutoScroll = True
@@ -215,6 +194,27 @@ Partial Class VrtForm
         Me.RatingPanel.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50.0!))
         Me.RatingPanel.Size = New System.Drawing.Size(366, 577)
         Me.RatingPanel.TabIndex = 0
+        '
+        'Replay_Button
+        '
+        Me.Replay_Button.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.Replay_Button.Enabled = False
+        Me.Replay_Button.Location = New System.Drawing.Point(3, 3)
+        Me.Replay_Button.Name = "Replay_Button"
+        Me.Replay_Button.Size = New System.Drawing.Size(106, 24)
+        Me.Replay_Button.TabIndex = 3
+        Me.Replay_Button.Text = "Replay"
+        Me.Replay_Button.UseVisualStyleBackColor = True
+        '
+        'ChangeView_Button
+        '
+        Me.ChangeView_Button.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.ChangeView_Button.Location = New System.Drawing.Point(1011, 3)
+        Me.ChangeView_Button.Name = "ChangeView_Button"
+        Me.ChangeView_Button.Size = New System.Drawing.Size(107, 24)
+        Me.ChangeView_Button.TabIndex = 4
+        Me.ChangeView_Button.Text = "Change view"
+        Me.ChangeView_Button.UseVisualStyleBackColor = True
         '
         'VrtForm
         '

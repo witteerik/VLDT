@@ -476,7 +476,7 @@ Public Class RatingStimulus
                 End If
             ElseIf Question.QuestionType = RatingQuestion.QuestionTypes.Text Then
                 If Question.TextResponse.Trim <> "" Then
-                    ColumnList.Add(Question.TextResponse)
+                    ColumnList.Add(Question.TextResponse.Replace(vbCrLf, "; "))
                 Else
                     ColumnList.Add("MissingValue")
                 End If

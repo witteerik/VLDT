@@ -103,7 +103,8 @@
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Net.Http" />
-    <Reference Include="VLDT_lib">
+    <Reference Include="VLDT_lib, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\VLDT_lib\bin\Release\VLDT_lib.dll</HintPath>
     </Reference>
   </ItemGroup>

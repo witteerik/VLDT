@@ -248,7 +248,7 @@ Public Class VrtForm
 
             Dim TrialExportFileName As String = CreateExportFileName(ParticipantID, ParticipantNumber, True)
             'Exporting data
-            Utils.SendInfoToLog(CurrentTestStimulus.ToString(TrialExportIncludeHeadings), IO.Path.GetFileName(TrialExportFileName), IO.Path.GetDirectoryName(TrialExportFileName), True, True)
+            Utils.SendInfoToLog(CurrentTestStimulus.ToString(TrialExportIncludeHeadings, ParticipantID, ParticipantNumber), IO.Path.GetFileName(TrialExportFileName), IO.Path.GetDirectoryName(TrialExportFileName), True, True)
             TrialExportIncludeHeadings = False
 
         End If
@@ -375,7 +375,7 @@ Public Class VrtForm
             Dim ExportFileName As String = CreateExportFileName(ParticipantID, ParticipantNumber, False)
 
 
-            RatingStimulusSet.SaveResults(ExportFileName)
+            RatingStimulusSet.SaveResults(ExportFileName, ParticipantID, ParticipantNumber)
         End If
 
         'Stops all timers before closing the app

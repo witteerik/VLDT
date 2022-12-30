@@ -326,7 +326,7 @@ Public Class RatingStimulusSet
 
     Public Function GetNextStimulus() As RatingStimulus
 
-        If CurrentItemIndex < StimulusList.Count - 2 Then
+        If CurrentItemIndex < StimulusList.Count - 1 Then
             CurrentItemIndex += 1
             Return StimulusList(CurrentItemIndex)
         Else
@@ -335,7 +335,7 @@ Public Class RatingStimulusSet
 
     End Function
 
-    Public Sub SaveResults(ByVal ExportFileName As String)
+    Public Sub SaveResults(ByVal ExportFileName As String, ByVal ParticipantID As String, ByVal ParticipantNumber As Integer)
 
         If StimulusList.Count > 0 Then
 
@@ -343,7 +343,7 @@ Public Class RatingStimulusSet
 
             Dim IncludeHeadings As Boolean = True
             For n = 0 To StimulusList.Count - 1
-                ExportList.Add(StimulusList(n).ToString(IncludeHeadings))
+                ExportList.Add(StimulusList(n).ToString(IncludeHeadings, ParticipantID, ParticipantNumber))
                 IncludeHeadings = False
             Next
 
@@ -417,6 +417,8 @@ Public Class RatingStimulus
 
         Dim HeadingList As New List(Of String)
 
+        HeadingList.Add("ParticipantID")
+        HeadingList.Add("ParticipantNumber")
         HeadingList.Add("StimulusNumber")
         HeadingList.Add("VideoFileName")
         HeadingList.Add("VideoFilePath")
@@ -431,7 +433,7 @@ Public Class RatingStimulus
 
     End Function
 
-    Public Shadows Function ToString(ByVal IncludeHeading As Boolean) As String
+    Public Shadows Function ToString(ByVal IncludeHeading As Boolean, ByVal ParticipantID As String, ByVal ParticipantNumber As Integer) As String
 
         Dim OutputList As New List(Of String)
 
@@ -442,6 +444,9 @@ Public Class RatingStimulus
         For q = 0 To Questions.Count - 1
 
             Dim ColumnList As New List(Of String)
+
+            ColumnList.Add(ParticipantID)
+            ColumnList.Add(ParticipantNumber)
 
             ColumnList.Add(StimulusNumber)
             ColumnList.Add(FileName)
